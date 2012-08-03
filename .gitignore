@@ -1,0 +1,12 @@
+# IntelliJ IDEA project files #
+###############################
+*.idea
+*.iml
+
+# Eclipse project files #
+#########################
+*.project
+
+# Target Folders #
+##################
+*target
