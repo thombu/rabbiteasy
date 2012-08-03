@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="false" xmlns:log4j="">
+
+<!-- Console -->
+<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%6.6p %d [%t] %C.%M(%L) %m%n"/>
+    </layout>
+</appender>
+
+<!-- ignore warning during shutdown -->
+<logger name="com.zanox.rabbiteasy" additivity="false">
+    <level value="debug" />
+    <appender-ref ref="STDOUT" />
+</logger>
+
+</log4j:configuration>
