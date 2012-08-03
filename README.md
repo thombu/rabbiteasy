@@ -2,7 +2,7 @@
 
 ## Purpose
 
-RabbitEasy is a library for easily integrating RabbitMQ into your Java infrastructure. It is built on top
+RabbitEasy is a library for easily integrating [RabbitMQ](http://rabbitmq.com) into your Java infrastructure. It is built on top
 of the official RabbitMQ Java client and improves realization of many common scenarios for Java SE and EE
 applications.
 
