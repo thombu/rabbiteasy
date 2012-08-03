@@ -105,7 +105,7 @@ Message message = new Message()
         .body("My message content");
 
 Publisher publisher = new SimplePublisher(connectionFactory);
-publisher.sendMessage(message);
+publisher.send(message);
 publisher.close();
 ```
 
