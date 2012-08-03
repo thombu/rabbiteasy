@@ -1,29 +1,33 @@
-# Purpose
+# Introduction 
+
+## Purpose
 
 RabbitEasy is a library for easily integrating RabbitMQ into your Java infrastructure. It is built on top
 of the official RabbitMQ Java client and improves realization of many common scenarios for Java SE and EE
 applications.
 
-# Features
+## Overview
 
-## Core
+### Core
 
+- connection factory for long living single connections
 - intuitive producers, also for publisher confirms and transactions
 - managed consumers that automatically re-attach to the broker after connection loss
 
-## CDI
+### CDI
 
-- transparent publishing of CDI events to exchanges on a broker
-- transparent observing of messages from the broker as CDI events
+- convenient integration for JEE6/CDI applications
+- publishing of AMQP messages for CDI events to exchanges
+- consuming of AMQP messages as CDI events from queues 
 
-## Testing
+### Testing
 
 - convenient broker definition setup and tear down
 - convenient asserts on current broker state
 
-# Documentation: Core
+# Core
 
-## Single Connection Factory
+## Connection Factory
 
 The single connection factory always provides the same connection on calling newConnection() and reestablishes
 this connection as soon as the connection is lost.
@@ -207,7 +211,7 @@ consumerContainer.addConsumer(new MyConsumer(), "my.queue", true); // <- last pa
 consumerContainer.startAllConsumers();
 ```
 
-# Documentation: CDI
+# CDI
 
 ## Using event binders
 
