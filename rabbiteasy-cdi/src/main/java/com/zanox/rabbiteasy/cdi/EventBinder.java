@@ -64,7 +64,8 @@ public abstract class EventBinder {
     @Inject
     ConnectionConfigurator connectionConfigurator;
 
-    BindingPipeline bindingPipeline = new BindingPipeline();
+    Set<QueueBinding> queueBindings =  new HashSet<QueueBinding>();
+    Set<ExchangeBinding> exchangeBindings =  new HashSet<ExchangeBinding>();
 
     /**
      * <p>Extend {@link EventBinder} and implement this method to
@@ -103,17 +104,17 @@ public abstract class EventBinder {
     }
 
     void processExchangeBindings() {
-        for (ExchangeBinding exchangeBinding : bindingPipeline.exchangeBindings) {
+        for (ExchangeBinding exchangeBinding : exchangeBindings) {
             bindExchange(exchangeBinding);
         }
-        bindingPipeline.exchangeBindings.clear();
+        exchangeBindings.clear();
     }
 
     void processQueueBindings() {
-        for (QueueBinding queueBinding : bindingPipeline.queueBindings) {
+        for (QueueBinding queueBinding : queueBindings) {
             bindQueue(queueBinding);
         }
-        bindingPipeline.queueBindings.clear();
+        queueBindings.clear();
     }
 
     void bindQueue(final QueueBinding queueBinding) {
@@ -156,13 +157,6 @@ public abstract class EventBinder {
         return new EventBindingBuilder(event);
     }
 
-    private static class BindingPipeline {
-        private Set<QueueBinding> queueBindings =
-                new HashSet<QueueBinding>();
-        private Set<ExchangeBinding> exchangeBindings =
-                new HashSet<ExchangeBinding>();
-    }
-
     public class EventBindingBuilder {
 
         private Class<?> eventType;
@@ -171,10 +165,25 @@ public abstract class EventBinder {
             this.eventType = eventType;
         }
 
+        /**
+         * Binds an event to the given queue. On initialization, a
+         * consumer is going to be registered at the broker that
+         * is going to fire an event of the bound event type
+         * for every consumed message.
+         *
+         * @param queue The queue
+         */
         public QueueBinding toQueue(String queue) {
             return new QueueBinding(eventType, queue);
         }
 
+        /**
+         * Binds an event to the given exchange. After initialization,
+         * all fired events of the bound event type are going to
+         * be published to the exchange.
+         *
+         * @param exchange The exchange
+         */
         public ExchangeBinding toExchange(String exchange) {
             return new ExchangeBinding(eventType, exchange);
         }
@@ -194,7 +203,7 @@ public abstract class EventBinder {
         public QueueBinding(Class<?> eventType, String queue) {
             this.eventType = eventType;
             this.queue = queue;
-            bindingPipeline.queueBindings.add(this);
+            queueBindings.add(this);
             LOGGER.info("Binding created between queue {} and event type {}", queue, eventType.getSimpleName());
         }
 
@@ -233,7 +242,7 @@ public abstract class EventBinder {
         public ExchangeBinding(Class<?> eventType, String exchange) {
             this.eventType = eventType;
             this.exchange = exchange;
-            bindingPipeline.exchangeBindings.add(this);
+            exchangeBindings.add(this);
             LOGGER.info("Binding created between exchange {} and event type {}", exchange, eventType.getSimpleName());
         }
 
