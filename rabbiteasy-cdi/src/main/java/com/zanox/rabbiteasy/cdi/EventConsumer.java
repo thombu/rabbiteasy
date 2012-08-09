@@ -64,7 +64,6 @@ public class EventConsumer extends MessageConsumer {
                         return (Class<T>) typeArgument;
                     }
                 }
-
             }
         }
         // This may never happen if the caller checked if object instanceof expectedType
