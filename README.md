@@ -340,7 +340,7 @@ classes and takes care of message body serialization and deserialization.
 
 ### Adding casual content
 
-To transport content within an event, implement the ContainsData interface and specify of which type the
+To transport content within an event, implement the ContainsContent interface and specify of which type the
 content is in the Generic Parameter. This way, the framework knows how to serialize and deserialize the
 event content:
 
