@@ -7,10 +7,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author christian.bick
@@ -48,39 +45,42 @@ public class EventConsumer extends MessageConsumer {
 
     @SuppressWarnings("unchecked")
     static <T> Class<T> getParameterType(Object object, Class<T> expectedType) {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
-        for (Class<?> candidateInterface : object.getClass().getClasses()) {
-            System.out.println(candidateInterface.getName());
-        }
+        Collection<Class<?>> extendedAndImplementedTypes =
+                getExtendedAndImplementedTypes(object.getClass(), new HashSet<Class<?>>());
+
         Type typeArgument = null;
-        outer : for  (Class<?> candidateClass : getSuperClassesAndInterfaces(object.getClass(), new HashSet<Class<?>>())) {
-            Type[] candidateTypes  = candidateClass.getGenericInterfaces();
-            for (Type candidateType : candidateTypes) {
-                if (candidateType instanceof ParameterizedType) {
-                    ParameterizedType parameterizedCandidateType = (ParameterizedType) candidateType;
+        outer : for  (Class<?> type : extendedAndImplementedTypes) {
+            Type[] implementedInterfaces  = type.getGenericInterfaces();
+            for (Type implementedInterface : implementedInterfaces) {
+                if (implementedInterface instanceof ParameterizedType) {
+                    ParameterizedType parameterizedCandidateType = (ParameterizedType) implementedInterface;
                     if (parameterizedCandidateType.getRawType().equals(expectedType)) {
-                        typeArgument = parameterizedCandidateType.getActualTypeArguments()[0];
+                        Type[] typeArguments = parameterizedCandidateType.getActualTypeArguments();
+                        if (typeArguments.length == 0) {
+                            typeArgument = Object.class;
+                        } else {
+                            typeArgument = parameterizedCandidateType.getActualTypeArguments()[0];
+                        }
                         break outer;
                     }
                 }
 
             }
-            candidateClass = candidateClass.getSuperclass();
         }
         return (Class<T>) typeArgument;
     }
 
-    static Set<Class<?>> getSuperClassesAndInterfaces(Class<?> clazz, Set<Class<?>> hierarchy) {
+    static Set<Class<?>> getExtendedAndImplementedTypes(Class<?> clazz, Set<Class<?>> hierarchy) {
         if (clazz.equals(Object.class)) {
             return hierarchy;
         }
         hierarchy.add(clazz);
         Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
-            hierarchy = getSuperClassesAndInterfaces(superClass, hierarchy);
+            hierarchy = getExtendedAndImplementedTypes(superClass, hierarchy);
         }
-        for (Class<?> implemented : clazz.getInterfaces()) {
-            hierarchy = getSuperClassesAndInterfaces(implemented, hierarchy);
+        for (Class<?> implementedInterface : clazz.getInterfaces()) {
+            hierarchy = getExtendedAndImplementedTypes(implementedInterface, hierarchy);
         }
         return hierarchy;
     }
