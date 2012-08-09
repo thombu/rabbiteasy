@@ -80,6 +80,27 @@ public class EventConsumerTest {
         Assert.assertEquals(input, output);
     }
 
+    @Test
+     public void testGetParameterTypeForDirectImplementer() {
+        Class<?> clazz = EventConsumer.getParameterType(new TestEventContainsId(), ContainsId.class);
+        Assert.assertNotNull(clazz);
+        Assert.assertEquals(Integer.class, clazz);
+    }
+
+    @Test
+    public void testGetParameterTypeForIndirectImplementer() {
+        Class<?> clazz = EventConsumer.getParameterType(new TestEventContainsIdChild(), ContainsId.class);
+        Assert.assertNotNull(clazz);
+        Assert.assertEquals(Integer.class, clazz);
+    }
+
+    @Test
+    public void testGetParameterTypeForExtensionImplementer() {
+        Class<?> clazz = EventConsumer.getParameterType(new TestEventContainsIdExtension(), ContainsId.class);
+        Assert.assertNotNull(clazz);
+        Assert.assertEquals(Integer.class, clazz);
+    }
+
     @SuppressWarnings("unchecked")
     EventConsumer buildEventConsumer(Class<?> eventClass) {
         Event<Object> eventControl = (Event<Object>)container.event().select(eventClass);
