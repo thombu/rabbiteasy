@@ -1,13 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <!--
-	<parent>
-		<groupId>com.zanox.maven</groupId>
-		<artifactId>master-pom-common</artifactId>
-		<version>1.35</version>
-	</parent>
-	-->
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
 	<groupId>com.zanox.rabbiteasy</groupId>
 	<artifactId>rabbiteasy</artifactId>
@@ -15,17 +13,33 @@
 	<packaging>pom</packaging>
 	<name>RabbitEasy</name>
 	<description>Convenient library for clients using a RabbitMQ message broker</description>
+    <url>https://github.com/zanox/rabbiteasy</url>
 
 	<scm>
-		<url>scm:svn:https://svn.zanox.com/zxlib/rabbiteasy/trunk</url>
-		<connection>scm:svn:https://svn.zanox.com/zxlib/rabbiteasy/trunk</connection>
-		<developerConnection>scm:svn:https://svn.zanox.com/zxlib/rabbiteasy/trunk</developerConnection>
+		<url>scm:git:git@github.com:zanox/rabbiteasy.git</url>
+		<connection>scm:git:git@github.com:zanox/rabbiteasy.git</connection>
+		<developerConnection>scm:git:git@github.com:zanox/rabbiteasy.git</developerConnection>
 	</scm>
 
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://z-de-bld01:8090/job/rabbiteasy</url>
-	</ciManagement>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Christian Bick</name>
+        </developer>
+        <developer>
+            <name>Uwe Janner</name>
+        </developer>
+        <developer>
+            <name>Soner Dastan</name>
+        </developer>
+    </developers>
 	
 	<modules>
 		<module>rabbiteasy-core</module>
