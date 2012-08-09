@@ -48,26 +48,28 @@ public class EventConsumer extends MessageConsumer {
         Collection<Class<?>> extendedAndImplementedTypes =
                 getExtendedAndImplementedTypes(object.getClass(), new LinkedList<Class<?>>());
 
-        Type typeArgument = null;
-        outer : for  (Class<?> type : extendedAndImplementedTypes) {
+        for  (Class<?> type : extendedAndImplementedTypes) {
             Type[] implementedInterfaces  = type.getGenericInterfaces();
             for (Type implementedInterface : implementedInterfaces) {
                 if (implementedInterface instanceof ParameterizedType) {
                     ParameterizedType parameterizedCandidateType = (ParameterizedType) implementedInterface;
                     if (parameterizedCandidateType.getRawType().equals(expectedType)) {
                         Type[] typeArguments = parameterizedCandidateType.getActualTypeArguments();
+                        Type typeArgument;
                         if (typeArguments.length == 0) {
                             typeArgument = Object.class;
                         } else {
                             typeArgument = parameterizedCandidateType.getActualTypeArguments()[0];
                         }
-                        break outer;
+                        return (Class<T>) typeArgument;
                     }
                 }
 
             }
         }
-        return (Class<T>) typeArgument;
+        // This may never happen if the caller checked if object instanceof expectedType
+        throw new RuntimeException("Expected type " + expectedType +
+                " is not in class hierarchy of " + object.getClass());
     }
 
     static List<Class<?>> getExtendedAndImplementedTypes(Class<?> clazz, List<Class<?>> hierarchy) {
