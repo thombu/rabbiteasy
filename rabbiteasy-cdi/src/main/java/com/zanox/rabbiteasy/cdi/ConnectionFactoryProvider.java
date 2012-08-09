@@ -7,12 +7,13 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
 /**
+ * Provides the default connection factory.
+ *
  * @author christian.bick
  */
 public class ConnectionFactoryProvider {
 
-    @Produces
-    @Singleton
+    @Produces @Singleton
     public ConnectionFactory provideConnectionFactory() {
         return new SingleConnectionFactory();
     }

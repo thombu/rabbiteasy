@@ -79,6 +79,8 @@ public class EventPublisher {
     }
 
     /**
+     * A publisher configuration stores all important settings and options used for publishing and event.
+     *
      * @author christian.bick
      */
     public static class PublisherConfiguration {
@@ -101,6 +103,13 @@ public class EventPublisher {
         AMQP.BasicProperties basicProperties;
     }
 
+    /**
+     * Builds a message based on a CDI event and its publisher configuration.
+     *
+     * @param publisherConfiguration The publisher configuration
+     * @param event The CDI event
+     * @return The message
+     */
     static Message buildMessage(PublisherConfiguration publisherConfiguration, Object event) {
         Message message = new Message(publisherConfiguration.basicProperties)
                 .exchange(publisherConfiguration.exchange)

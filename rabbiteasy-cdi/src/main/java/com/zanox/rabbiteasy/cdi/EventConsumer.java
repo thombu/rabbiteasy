@@ -10,6 +10,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 /**
+ * Consumes AMQP messages and fires CDI events for these messages.
+ *
  * @author christian.bick
  */
 public class EventConsumer extends MessageConsumer {
@@ -28,23 +30,40 @@ public class EventConsumer extends MessageConsumer {
         eventControl.fire(event);
     }
 
+    /**
+     * Builds a CDI event from a message. The CDI event instance is retrieved
+     * from the injection container.
+     *
+     * @param message The message
+     * @return The CDI event
+     */
     @SuppressWarnings("unchecked")
     Object buildEvent(Message message) {
         Object event = eventPool.get();
         if (event instanceof ContainsData) {
             ((ContainsData) event).setData(message.getBodyContent());
         } else if (event instanceof ContainsContent) {
-            Class<ContainsContent> parameterType = getParameterType(event, ContainsContent.class);
+            Class<?> parameterType = getParameterType(event, ContainsContent.class);
             ((ContainsContent) event).setContent(message.getBodyAs(parameterType));
         } else if (event instanceof ContainsId) {
-            Class<ContainsId> parameterType = getParameterType(event, ContainsId.class);
+            Class<?> parameterType = getParameterType(event, ContainsId.class);
             ((ContainsId) event).setId(message.getBodyAs(parameterType));
         }
         return event;
     }
 
+    /**
+     * Gets the type parameter of the expected generic interface which is
+     * actually used by the class of the given object. The generic
+     * interface can be implemented by an class or interface in the object's
+     * class hierarchy,
+     *
+     * @param object The object
+     * @param expectedType The expected generic interface
+     * @return The actually used parameter of the expected generic interface
+     */
     @SuppressWarnings("unchecked")
-    static <T> Class<T> getParameterType(Object object, Class<T> expectedType) {
+    static Class<?> getParameterType(Object object, Class<?> expectedType) {
         Collection<Class<?>> extendedAndImplementedTypes =
                 getExtendedAndImplementedTypes(object.getClass(), new LinkedList<Class<?>>());
 
@@ -61,20 +80,25 @@ public class EventConsumer extends MessageConsumer {
                         } else {
                             typeArgument = parameterizedCandidateType.getActualTypeArguments()[0];
                         }
-                        return (Class<T>) typeArgument;
+                        return (Class<?>) typeArgument;
                     }
                 }
             }
         }
-        // This may never happen if the caller checked if object instanceof expectedType
+        // This may never happen in case the caller checked if object instanceof expectedType
         throw new RuntimeException("Expected type " + expectedType +
                 " is not in class hierarchy of " + object.getClass());
     }
 
+    /**
+     * Gets all classes and interfaces in the class hierarchy of the given class including
+     * the class itself.
+     *
+     * @param clazz The class
+     * @param hierarchy The current list of all classes and interfaces found so far
+     * @return All classes and interfaces in the class's hierarchy
+     */
     static List<Class<?>> getExtendedAndImplementedTypes(Class<?> clazz, List<Class<?>> hierarchy) {
-        if (clazz.equals(Object.class)) {
-            return hierarchy;
-        }
         hierarchy.add(clazz);
         Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {

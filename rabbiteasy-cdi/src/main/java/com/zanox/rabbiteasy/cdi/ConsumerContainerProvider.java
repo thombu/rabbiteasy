@@ -8,6 +8,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
+ * Provides the default consumer container.
+ *
  * @author christian.bick
  */
 public class ConsumerContainerProvider {
