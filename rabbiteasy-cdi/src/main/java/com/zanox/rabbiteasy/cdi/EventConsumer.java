@@ -46,7 +46,7 @@ public class EventConsumer extends MessageConsumer {
     @SuppressWarnings("unchecked")
     static <T> Class<T> getParameterType(Object object, Class<T> expectedType) {
         Collection<Class<?>> extendedAndImplementedTypes =
-                getExtendedAndImplementedTypes(object.getClass(), new HashSet<Class<?>>());
+                getExtendedAndImplementedTypes(object.getClass(), new LinkedList<Class<?>>());
 
         Type typeArgument = null;
         outer : for  (Class<?> type : extendedAndImplementedTypes) {
@@ -70,7 +70,7 @@ public class EventConsumer extends MessageConsumer {
         return (Class<T>) typeArgument;
     }
 
-    static Set<Class<?>> getExtendedAndImplementedTypes(Class<?> clazz, Set<Class<?>> hierarchy) {
+    static List<Class<?>> getExtendedAndImplementedTypes(Class<?> clazz, List<Class<?>> hierarchy) {
         if (clazz.equals(Object.class)) {
             return hierarchy;
         }
