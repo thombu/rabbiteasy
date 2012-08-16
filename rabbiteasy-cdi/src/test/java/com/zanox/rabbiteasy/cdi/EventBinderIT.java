@@ -46,6 +46,8 @@ public class EventBinderIT {
         eventControl = container.event();
         eventBinder = instancePool.select(TestEventBinder.class).get();
         ConnectionFactory connectionFactory = instancePool.select(ConnectionFactory.class).get();
+        connectionFactory.setHost(brokerSetup.getHost());
+        connectionFactory.setPort(brokerSetup.getPort());
         publisher = new ConfirmedPublisher(connectionFactory);
     }
 

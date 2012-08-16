@@ -1,6 +1,7 @@
 package com.zanox.rabbiteasy.testing;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.GetResponse;
 import junit.framework.Assert;
 
@@ -17,14 +18,18 @@ import java.io.IOException;
 public class BrokerAssert {
 
     private Channel channel;
-    
+
     public BrokerAssert() {
-        this(BrokerConnection.DEFAULT_HOST, BrokerConnection.DEFAULT_PORT);
+        this(BrokerConnection.getConnection());
     }
-    
+
     public BrokerAssert(String host, int port) {
+        this(BrokerConnection.getConnection(host, port));
+    }
+
+    public BrokerAssert(Connection connection) {
         try {
-            channel = BrokerConnection.getConnection(host, port).createChannel();
+            channel = connection.createChannel();
         } catch (IOException e) {
             throw new RuntimeException("Failed to create a new channel", e);
         }
