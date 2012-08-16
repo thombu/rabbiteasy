@@ -14,8 +14,8 @@ public class SingleConnectionFactoryIT {
     @Before
     public void before() {
         this.singleConnectionFactory = new SingleConnectionFactory();
-        singleConnectionFactory.setHost(BrokerConnection.DEFAULT_HOST);
-        singleConnectionFactory.setPort(BrokerConnection.DEFAULT_PORT);
+        singleConnectionFactory.setHost(BrokerConnection.getDefaultHost());
+        singleConnectionFactory.setPort(BrokerConnection.getDefaultPort());
     }
     
     @After

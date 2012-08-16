@@ -18,14 +18,22 @@ public class BrokerConnection {
 
     public static final String PROPERTY_HOST = "rabbiteasy.test.host";
     public static final String PROPERTY_PORT = "rabbiteasy.test.port";
-    public static final String DEFAULT_HOST = "localhost";
-    public static final int    DEFAULT_PORT = 5672;
     
     private static Map<String, Connection> connections = new HashMap<String, Connection>();
-    
+
+    public static String getDefaultHost() {
+        return System.getProperty(PROPERTY_HOST) == null ?
+                ConnectionFactory.DEFAULT_HOST : System.getProperty(PROPERTY_HOST);
+    }
+
+    public static int getDefaultPort() {
+        return System.getProperty(PROPERTY_PORT) == null ?
+                ConnectionFactory.DEFAULT_AMQP_PORT : Integer.valueOf(System.getProperty(PROPERTY_PORT));
+    }
+
     public static Connection getConnection() {
-        String host = System.getProperty(PROPERTY_HOST) == null ? DEFAULT_HOST : System.getProperty(PROPERTY_HOST);
-        int port = System.getProperty(PROPERTY_PORT) == null ? DEFAULT_PORT : Integer.valueOf(System.getProperty(PROPERTY_PORT));
+        String host = getDefaultHost();
+        int port = getDefaultPort();
         return getConnection(host, port);
     }
     
