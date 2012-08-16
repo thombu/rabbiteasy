@@ -4,6 +4,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.zanox.rabbiteasy.Message;
+import com.zanox.rabbiteasy.TestBrokerSetup;
+import com.zanox.rabbiteasy.testing.BrokerSetup;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,10 +23,6 @@ import static org.easymock.EasyMock.*;
 @RunWith(PowerMockRunner.class)
 public class DefaultConsumerContainerTest {
     
-    private static final String TEST_QUEUE = "test.queue";
-    
-    private static final ConsumerConfiguration CONSUMER_CONFIG = new ConsumerConfiguration(TEST_QUEUE);
-    
     private ConsumerContainer consumerContainer;
     
     @Mock
@@ -37,8 +35,8 @@ public class DefaultConsumerContainerTest {
     @Before
     public void before() throws IOException {
         consumerContainer = new ConsumerContainer(connectionFactory);
-        consumerContainer.addConsumer(new TestConsumerOne(), TEST_QUEUE);
-        consumerContainer.addConsumer(new TestConsumerTwo(), TEST_QUEUE);
+        consumerContainer.addConsumer(new TestConsumerOne(), TestBrokerSetup.TEST_QUEUE);
+        consumerContainer.addConsumer(new TestConsumerTwo(), TestBrokerSetup.TEST_QUEUE);
     }
     
     private void mockConnectionOperations() throws Exception {
@@ -97,7 +95,7 @@ public class DefaultConsumerContainerTest {
         mockConnectionOperations();
         @SuppressWarnings("unchecked")
         ConsumerContainer.ConsumerHolder consumerHolder = consumerContainer.consumerHolders.get(0);
-        expect(channel.basicConsume(TEST_QUEUE, false, consumerHolder.getConsumer())).andReturn("").once();
+        expect(channel.basicConsume(TestBrokerSetup.TEST_QUEUE, false, consumerHolder.getConsumer())).andReturn("").once();
         PowerMock.replayAll();
         consumerHolder.activate();
         Assert.assertTrue(consumerHolder.isActive());
