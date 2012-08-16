@@ -1,6 +1,7 @@
 package com.zanox.rabbiteasy.testing;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,22 +26,22 @@ public class BrokerSetup {
     public static final String DEAD_LETTER_ROUTING_KEY = "x-dead-letter-routing-key";
     public static final String HIGH_AVAILABILITY_POLICY = "x-ha-policy";
 
-    private String host;
-    private int port;
     private Channel channel;
     
     private List<String> declaredExchanges = new LinkedList<String>();
     private List<String> declaredQueues = new LinkedList<String>();
     
     public BrokerSetup() {
-        this(BrokerConnection.DEFAULT_HOST, BrokerConnection.DEFAULT_PORT);
+        this(BrokerConnection.getConnection());
     }
-    
+
     public BrokerSetup(String host, int port) {
-        this.host = host;
-        this.port = port;
+        this(BrokerConnection.getConnection(host, port));
+    }
+
+    public BrokerSetup(Connection connection) {
         try {
-            channel = BrokerConnection.getConnection(host, port).createChannel();
+            channel = connection.createChannel();
         } catch (IOException e) {
             throw new RuntimeException("Failed to create a new channel", e);
         }
@@ -184,7 +185,7 @@ public class BrokerSetup {
      * @return the host
      */
     public String getHost() {
-        return host;
+        return channel.getConnection().getAddress().getHostName();
     }
 
     /**
@@ -193,7 +194,7 @@ public class BrokerSetup {
      * @return the port
      */
     public int getPort() {
-        return port;
+        return channel.getConnection().getPort();
     }
     
     

@@ -3,75 +3,82 @@ package com.zanox.rabbiteasy.testing;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 
 public class BrokerSetupIT {
-    
+
+    private static final String TEST_EXCHANGE = "lib.test.exchange";
+    private static final String TEST_QUEUE = "lib.test.queue";
+
     private BrokerSetup brokerSetup;
     
     @Before
     public void before() {
         brokerSetup = new BrokerSetup();
     }
+
+    @After
+    public void after() {
+        try {
+            brokerSetup.getChannel().exchangeDelete(TEST_EXCHANGE);
+        } catch (Exception e) {}
+        try {
+            brokerSetup.getChannel().queueDelete(TEST_QUEUE);
+        } catch (Exception e) { }
+    }
     
     @Test
     public void shouldDeclareExchange() throws Exception {
-        String exchange = "test.exchange";
-        brokerSetup.declareExchange(exchange, "topic");
-        brokerSetup.getChannel().exchangeDeclarePassive(exchange);
-        brokerSetup.getChannel().exchangeDelete(exchange);
+        brokerSetup.declareExchange(TEST_EXCHANGE, "topic");
+        brokerSetup.getChannel().exchangeDeclarePassive(TEST_EXCHANGE);
     }
     
     @Test
     public void shouldDeclareAndBindQueue() throws Exception {
         Channel channel = brokerSetup.getChannel();
-        
-        String exchange = "test.exchange";
-        String queue = "test.queue";
+
         String routingKey = "test.key";
-        channel.exchangeDeclare(exchange, "topic");
-        brokerSetup.declareAndBindQueue(queue, exchange, routingKey);
-        channel.queueDeclarePassive(queue);
+        channel.exchangeDeclare(TEST_EXCHANGE, "topic");
+        brokerSetup.declareAndBindQueue(TEST_QUEUE, TEST_EXCHANGE, routingKey);
+        channel.queueDeclarePassive(TEST_QUEUE);
         
         String body = "test.body";
-        channel.basicPublish(exchange, routingKey, new BasicProperties(), body.getBytes()); 
+        channel.basicPublish(TEST_EXCHANGE, routingKey, new BasicProperties(), body.getBytes());
         
-        GetResponse response = channel.basicGet(queue, true);
+        GetResponse response = channel.basicGet(TEST_QUEUE, true);
         Assert.assertNotNull("no message in queue", response);
         Assert.assertEquals("wrong message in queue", new String(response.getBody(), "UTF-8"), body);
         
-        channel.exchangeDelete(exchange);
-        channel.queueDelete(queue);
+        channel.exchangeDelete(TEST_EXCHANGE);
     }
     
     @Test
     public void shouldTearDown() throws Exception {
         Channel channel = brokerSetup.getChannel();
-        
-        String exchange = "test.exchange";
-        String queue = "test.queue";
+
         String routingKey = "test.key";
-        brokerSetup.declareExchange(exchange, "topic");
-        brokerSetup.declareAndBindQueue(queue, exchange, routingKey);
-        channel.exchangeDeclarePassive(exchange);
-        channel.queueDeclarePassive(queue);
+        brokerSetup.declareExchange(TEST_EXCHANGE, "topic");
+        brokerSetup.declareAndBindQueue(TEST_QUEUE, TEST_EXCHANGE, routingKey);
+        channel.exchangeDeclarePassive(TEST_EXCHANGE);
+        channel.queueDeclarePassive(TEST_QUEUE);
         
         brokerSetup.tearDown();
         
         boolean exchangeExists = true;
         try {
-            channel.exchangeDeclarePassive(exchange);
+            channel.exchangeDeclarePassive(TEST_EXCHANGE);
         } catch (Exception e) {
             exchangeExists = false;
         }
         boolean queueExists = true;
         try {
-            queueExists = false;
+            channel.queueDeclarePassive(TEST_QUEUE);
         } catch (Exception e) {
-            channel.queueDeclarePassive(queue);
+            queueExists = false;
         }
         Assert.assertFalse(exchangeExists);
         Assert.assertFalse(queueExists);

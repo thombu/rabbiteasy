@@ -15,14 +15,18 @@ import java.util.Map;
  *
  */
 public class BrokerConnection {
-    
+
+    public static final String PROPERTY_HOST = "rabbiteasy.test.host";
+    public static final String PROPERTY_PORT = "rabbiteasy.test.port";
     public static final String DEFAULT_HOST = "localhost";
     public static final int    DEFAULT_PORT = 5672;
     
     private static Map<String, Connection> connections = new HashMap<String, Connection>();
     
     public static Connection getConnection() {
-        return getConnection(DEFAULT_HOST, DEFAULT_PORT);
+        String host = System.getProperty(PROPERTY_HOST) == null ? DEFAULT_HOST : System.getProperty(PROPERTY_HOST);
+        int port = System.getProperty(PROPERTY_PORT) == null ? DEFAULT_PORT : Integer.valueOf(System.getProperty(PROPERTY_PORT));
+        return getConnection(host, port);
     }
     
     public static synchronized Connection getConnection(String host, int port) {
