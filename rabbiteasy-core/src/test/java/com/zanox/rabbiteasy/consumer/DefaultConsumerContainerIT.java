@@ -18,7 +18,7 @@ import java.util.List;
 
 public class DefaultConsumerContainerIT {
     
-    private static final int MESSAGE_AMOUNT = 100;
+    private static final int MESSAGE_AMOUNT = 10;
     
     private TestBrokerSetup brokerSetup;
     
@@ -79,8 +79,8 @@ public class DefaultConsumerContainerIT {
                     .body("" + i);
             publisher.send(message);
         }
-        // Sleep depending on the amount of messages sent but at least 100 ms, and at most 10 sec
-        Thread.sleep(Math.min(100, Math.max(10000, MESSAGE_AMOUNT * 100)));
+        // Sleep depending on the amount of messages sent but at least 100 ms, and at most 1 sec
+        Thread.sleep(Math.max(100, Math.min(1000, MESSAGE_AMOUNT * 10)));
         List<Message> receivedMessages = testConsumer.getReceivedMessages();
         Assert.assertEquals(MESSAGE_AMOUNT, receivedMessages.size());
         for (int i=1; i<=MESSAGE_AMOUNT; i++) {
