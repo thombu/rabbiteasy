@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
 
 public class MessageTest {
 
-    private Message message;
+    Message message;
     
     @Before
     public void before() {
