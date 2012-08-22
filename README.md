@@ -14,16 +14,22 @@ applications.
 - intuitive producers, also for publisher confirms and transactions
 - managed consumers that automatically re-attach to the broker after connection loss
 
+Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-core%22)
+
 ### CDI
 
 - convenient integration for JEE6/CDI applications
 - publishing of AMQP messages for CDI events to exchanges
 - consuming of AMQP messages as CDI events from queues 
 
+Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-cdi%22)
+
 ### Testing
 
 - convenient broker definition setup and tear down
 - convenient asserts on current broker state
+
+Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-testing%22)
 
 # Core
 
