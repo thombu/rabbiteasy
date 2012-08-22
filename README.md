@@ -15,6 +15,7 @@ applications.
 - managed consumers that automatically re-attach to the broker after connection loss
 
 Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-core%22)
+and read the [documentation](https://github.com/zanox/rabbiteasy#core-1)
 
 ### CDI
 
@@ -23,6 +24,7 @@ Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22ra
 - consuming of AMQP messages as CDI events from queues 
 
 Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-cdi%22)
+and read the [documentation](https://github.com/zanox/rabbiteasy#cdi-1)
 
 ### Testing
 
