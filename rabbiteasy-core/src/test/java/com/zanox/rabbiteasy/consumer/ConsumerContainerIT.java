@@ -16,9 +16,13 @@ import com.zanox.rabbiteasy.SingleConnectionFactory;
 import com.zanox.rabbiteasy.TestBrokerSetup;
 import com.zanox.rabbiteasy.publisher.MessagePublisher;
 import com.zanox.rabbiteasy.publisher.SimplePublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ConsumerContainerIT {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(ConsumerContainerIT.class);
     
     private static final int MESSAGE_AMOUNT = 10;
     
@@ -64,11 +68,11 @@ public class ConsumerContainerIT {
         Connection connection = connectionFactory.newConnection();
         connectionFactory.setHost("unreachablehostnamethatdoesnotexist");
         connection.close();
-        System.out.println("Connection closed");
+        LOGGER.debug("Connection closed");
         Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 3);
         connectionFactory.setHost(brokerSetup.getHost());
         Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 2);
-        System.out.println("Performing assert");
+        LOGGER.debug("Performing assert");
         activeConsumerCount = consumerContainer.getActiveConsumers().size();
         Assert.assertEquals(1, activeConsumerCount);
     }
