@@ -450,8 +450,7 @@ public class ConsumerContainer {
                     LOGGER.info("Closed channel for consumer of class {}", consumer.getClass());
                 } catch (Exception e) {
                     LOGGER.info("Aborted closing channel for consumer of class {} (already closing)", consumer.getClass());
-                    // Ignore exception: In this case the channel is for sure
-                    // not usable any more
+                    // Ignore exception: In this case the channel is for sure not usable any more
                 }
                 channel = null;
             }

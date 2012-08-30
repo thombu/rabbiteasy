@@ -47,11 +47,12 @@ public class SingleConnectionFactory extends ConnectionFactory {
         CLOSED
     }
 
-    private static final int CONNECTION_HEARTBEAT_IN_SEC = 3;
-    private static final int CONNECTION_TIMEOUT_IN_MS = 1000;
-    private static final int CONNECTION_RETRIEVAL_APPROACHES = 3;
-    private static final int CONNECTION_ESTABLISH_INTERVAL_IN_MS = 500;
-	private static final Logger LOGGER = LoggerFactory.getLogger(SingleConnectionFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SingleConnectionFactory.class);
+
+    public static final int CONNECTION_HEARTBEAT_IN_SEC = 3;
+    public static final int CONNECTION_TIMEOUT_IN_MS = 1000;
+    public static final int CONNECTION_RETRIEVAL_APPROACHES = 3;
+    public static final int CONNECTION_ESTABLISH_INTERVAL_IN_MS = 500;
     
     private ShutdownListener connectionShutdownListener;
     private List<ConnectionListener> connectionListeners;
@@ -212,6 +213,7 @@ public class SingleConnectionFactory extends ConnectionFactory {
                 changeState(State.CONNECTED);
             } catch (IOException e) {
                 LOGGER.error("Failed to establish connection to {}:{}", getHost(), getPort());
+                throw e;
             }
         }
     }
@@ -249,7 +251,7 @@ public class SingleConnectionFactory extends ConnectionFactory {
                     LOGGER.info("Next reconnect attempt in {}", CONNECTION_ESTABLISH_INTERVAL_IN_MS);
                     try {
                         Thread.sleep(CONNECTION_ESTABLISH_INTERVAL_IN_MS);
-                    } catch (InterruptedException e1) {
+                    } catch (InterruptedException ie) {
                         // that's fine, simply stop here
                         return;
                     }

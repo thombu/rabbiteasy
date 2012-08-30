@@ -10,6 +10,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sun.management.jmxremote.SingleEntryRegistry;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,8 +61,11 @@ public class ConsumerContainerIT {
         int activeConsumerCount = consumerContainer.getActiveConsumers().size();
         Assert.assertEquals(1, activeConsumerCount);
         Connection connection = connectionFactory.newConnection();
+        connectionFactory.setHost("unreachablehostnamethatdoesnotexist");
         connection.close();
-        Thread.sleep(300);
+        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 3);
+        connectionFactory.setHost(brokerSetup.getHost());
+        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 2);
         activeConsumerCount = consumerContainer.getActiveConsumers().size();
         Assert.assertEquals(1, activeConsumerCount);
     }
