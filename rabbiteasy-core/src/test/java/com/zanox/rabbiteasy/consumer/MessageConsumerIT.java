@@ -16,7 +16,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 
-public class SimpleConsumerIT {
+public class MessageConsumerIT {
 
     BrokerSetup brokerSetup;
     BrokerAssert brokerAssert;
