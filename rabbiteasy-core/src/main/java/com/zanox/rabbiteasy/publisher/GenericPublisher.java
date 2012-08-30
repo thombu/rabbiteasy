@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class GenericPublisher implements MessagePublisher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimplePublisher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenericPublisher.class);
     private static final int DEFAULT_RETRY_ATTEMPTS = 3;
     private static final int DEFAULT_RETRY_INTERVAL = 1000;
 
