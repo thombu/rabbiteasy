@@ -40,7 +40,8 @@ public class BrokerConnection {
     public static synchronized Connection getConnection(String host, int port) {
         String factoryKey = host + ":" + port;
         try {
-            if (!connections.containsKey(factoryKey)) {
+            Connection connection = connections.get(factoryKey);
+            if (connection == null || !connection.isOpen()) {
                 ConnectionFactory connectionFactory = new ConnectionFactory();
                 connectionFactory.setHost(host);
                 connectionFactory.setPort(port);
