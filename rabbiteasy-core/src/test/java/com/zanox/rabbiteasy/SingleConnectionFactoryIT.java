@@ -9,18 +9,18 @@ import org.junit.Test;
 
 public class SingleConnectionFactoryIT {
 
-    private SingleConnectionFactory singleConnectionFactory;
+    SingleConnectionFactory singleConnectionFactory;
     
     @Before
     public void before() {
-        this.singleConnectionFactory = new SingleConnectionFactory();
+        singleConnectionFactory = new SingleConnectionFactory();
         singleConnectionFactory.setHost(BrokerConnection.getDefaultHost());
         singleConnectionFactory.setPort(BrokerConnection.getDefaultPort());
     }
     
     @After
     public void after() {
-        this.singleConnectionFactory.close();
+        singleConnectionFactory.close();
     }
     
     @Test
