@@ -21,7 +21,7 @@ import static org.easymock.EasyMock.*;
 
 
 @RunWith(PowerMockRunner.class)
-public class DefaultConsumerContainerTest {
+public class ConsumerContainerTest {
     
     private ConsumerContainer consumerContainer;
     

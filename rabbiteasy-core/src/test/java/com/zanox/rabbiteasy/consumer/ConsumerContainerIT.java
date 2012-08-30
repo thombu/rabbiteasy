@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DefaultConsumerContainerIT {
+public class ConsumerContainerIT {
     
     private static final int MESSAGE_AMOUNT = 10;
     
