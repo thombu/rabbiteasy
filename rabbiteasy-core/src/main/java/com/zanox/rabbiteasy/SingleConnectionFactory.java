@@ -51,7 +51,6 @@ public class SingleConnectionFactory extends ConnectionFactory {
 
     public static final int CONNECTION_HEARTBEAT_IN_SEC = 3;
     public static final int CONNECTION_TIMEOUT_IN_MS = 1000;
-    public static final int CONNECTION_RETRIEVAL_APPROACHES = 3;
     public static final int CONNECTION_ESTABLISH_INTERVAL_IN_MS = 500;
     
     ShutdownListener connectionShutdownListener;
@@ -86,25 +85,15 @@ public class SingleConnectionFactory extends ConnectionFactory {
             throw new IOException("Attempt to retrieve a connection from a closed connection factory");
         }
         // Try to retrieve a connection several times
-        for (int i=0; i< CONNECTION_RETRIEVAL_APPROACHES; i++) {
-            if (state == State.NEVER_CONNECTED) {
-                establishConnection();
-            }
-            if (connection != null && connection.isOpen()) {
-                return connection;
-            }
-            try {
-                LOGGER.warn("Unable to retrieve connection (approach {})", i);
-                Thread.sleep(CONNECTION_ESTABLISH_INTERVAL_IN_MS);
-            } catch (InterruptedException e) {
-                // that's fine, simply stop here
-                return null;
-            }
+        if (state == State.NEVER_CONNECTED) {
+            establishConnection();
+        }
+        if (connection != null && connection.isOpen()) {
+            return connection;
         }
         // Throw an exception after the connection could not be retrieved after some approaches
-        LOGGER.error("Unable to retrieve connection after {} attempts", CONNECTION_RETRIEVAL_APPROACHES);
-        throw new IOException("Unable to retrieve connection after "
-            + CONNECTION_RETRIEVAL_APPROACHES + " approaches");
+        LOGGER.error("Unable to retrieve connection");
+        throw new IOException("Unable to retrieve connection");
     }
     
     /**
