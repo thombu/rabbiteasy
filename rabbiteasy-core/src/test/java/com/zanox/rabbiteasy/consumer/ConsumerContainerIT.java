@@ -70,7 +70,7 @@ public class ConsumerContainerIT {
         connection.close();
         LOGGER.debug("Connection closed");
         Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 3);
-        connectionFactory.setHost(brokerSetup.getHost());
+        connectionFactory.setPort(brokerSetup.getPort());
         Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 2);
         LOGGER.debug("Performing assert");
         activeConsumerCount = consumerContainer.getActiveConsumers().size();
