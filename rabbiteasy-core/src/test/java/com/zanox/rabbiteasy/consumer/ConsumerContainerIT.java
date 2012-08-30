@@ -71,7 +71,7 @@ public class ConsumerContainerIT {
         LOGGER.debug("Connection closed");
         Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 3);
         connectionFactory.setHost(brokerSetup.getHost());
-        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 2);
+        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 10);
         LOGGER.debug("Performing assert");
         activeConsumerCount = consumerContainer.getActiveConsumers().size();
         Assert.assertEquals(1, activeConsumerCount);
