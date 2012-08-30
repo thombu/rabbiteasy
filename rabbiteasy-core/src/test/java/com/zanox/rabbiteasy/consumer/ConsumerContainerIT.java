@@ -64,9 +64,11 @@ public class ConsumerContainerIT {
         Connection connection = connectionFactory.newConnection();
         connectionFactory.setHost("unreachablehostnamethatdoesnotexist");
         connection.close();
+        System.out.println("Connection closed");
         Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 3);
         connectionFactory.setHost(brokerSetup.getHost());
         Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 2);
+        System.out.println("Performing assert");
         activeConsumerCount = consumerContainer.getActiveConsumers().size();
         Assert.assertEquals(1, activeConsumerCount);
     }
