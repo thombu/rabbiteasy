@@ -26,8 +26,8 @@ public class SingleConnectionFactoryIT {
     @Test
     public void shouldNotifyAboutConnectionState() throws Exception {
         TestConnectionListener connectionListener = new TestConnectionListener();
-        this.singleConnectionFactory.registerListener(connectionListener);
-        Connection connection = this.singleConnectionFactory.newConnection();
+        singleConnectionFactory.registerListener(connectionListener);
+        Connection connection = singleConnectionFactory.newConnection();
         Assert.assertNotNull(connection);
         Assert.assertTrue(connection.isOpen());
         Assert.assertTrue(connectionListener.connectionEstablishedTriggered);
@@ -35,11 +35,11 @@ public class SingleConnectionFactoryIT {
         // Have a short sleep because connection closed notification happens asynchronously
         Thread.sleep(50);
         Assert.assertTrue(connectionListener.connectionLostTriggered);
-        connection = this.singleConnectionFactory.newConnection();
+        connection = singleConnectionFactory.newConnection();
         Assert.assertNotNull(connection);
         Assert.assertTrue(connectionListener.connectionEstablishedTriggered);
         Assert.assertTrue(connection.isOpen());
-        this.singleConnectionFactory.close();
+        singleConnectionFactory.close();
         Assert.assertTrue(connectionListener.connectionClosedTriggered);
     }
 
@@ -52,11 +52,11 @@ public class SingleConnectionFactoryIT {
     
     @Test
     public void shouldReconnect() throws Exception {
-        Connection connection = this.singleConnectionFactory.newConnection();
+        Connection connection = singleConnectionFactory.newConnection();
         Assert.assertNotNull(connection);
         Assert.assertTrue(connection.isOpen());
         connection.close();
-        connection = this.singleConnectionFactory.newConnection();
+        connection = singleConnectionFactory.newConnection();
         Assert.assertNotNull(connection);
         Assert.assertTrue(connection.isOpen());
     }
