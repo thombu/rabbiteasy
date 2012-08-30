@@ -81,17 +81,19 @@ public class SingleConnectionFactory extends ConnectionFactory {
      * @return The connection
      */
     public Connection newConnection() throws IOException {
+        // Throw an exception if there is an attempt to retrieve a connection from a closed factory
         if (state == State.CLOSED) {
             throw new IOException("Attempt to retrieve a connection from a closed connection factory");
         }
-        // Try to retrieve a connection several times
+        // Try to establish a connection if there was no connection attempt so far
         if (state == State.NEVER_CONNECTED) {
             establishConnection();
         }
+        // Retrieve the connection if it is established
         if (connection != null && connection.isOpen()) {
             return connection;
         }
-        // Throw an exception after the connection could not be retrieved after some approaches
+        // Throw an exception if no established connection could not be retrieved
         LOGGER.error("Unable to retrieve connection");
         throw new IOException("Unable to retrieve connection");
     }
