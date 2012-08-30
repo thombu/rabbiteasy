@@ -171,12 +171,17 @@ public class GenericPublisher implements MessagePublisher {
 
             try {
                 initTransactionalChannel();
-                for (Message message : messages) {
-                    publishMessage(message, deliveryOptions, channel);
+                try {
+                    for (Message message : messages) {
+                        publishMessage(message, deliveryOptions, channel);
+                    }
+                    LOGGER.info("Committing transaction");
+                    commitTransaction();
+                    LOGGER.info("Transaction committed");
+                } catch (IOException e) {
+                    rollbackTransaction();
+                    throw e;
                 }
-                LOGGER.info("Committing transaction");
-                commitTransaction();
-                LOGGER.info("Transaction committed");
                 return;
             } catch (IOException e) {
                 rollbackTransaction();
