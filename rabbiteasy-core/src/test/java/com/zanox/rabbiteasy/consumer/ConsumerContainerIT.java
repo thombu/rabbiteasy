@@ -66,12 +66,12 @@ public class ConsumerContainerIT {
         int activeConsumerCount = consumerContainer.getActiveConsumers().size();
         Assert.assertEquals(1, activeConsumerCount);
         Connection connection = connectionFactory.newConnection();
-        connectionFactory.setHost("unreachablehostnamethatdoesnotexist");
+        connectionFactory.setPort(15345);
         connection.close();
         LOGGER.debug("Connection closed");
         Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 3);
         connectionFactory.setHost(brokerSetup.getHost());
-        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 10);
+        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 2);
         LOGGER.debug("Performing assert");
         activeConsumerCount = consumerContainer.getActiveConsumers().size();
         Assert.assertEquals(1, activeConsumerCount);
