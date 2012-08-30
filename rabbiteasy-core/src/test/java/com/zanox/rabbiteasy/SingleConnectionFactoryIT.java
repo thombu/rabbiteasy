@@ -52,18 +52,17 @@ public class SingleConnectionFactoryIT {
     
     @Test
     public void shouldReconnect() throws Exception {
-        Connection connection = singleConnectionFactory.newConnection();
-        Assert.assertNotNull(connection);
-        Assert.assertTrue(connection.isOpen());
+        singleConnectionFactory.newConnection();
+        Assert.assertNotNull(singleConnectionFactory.connection);
+        Assert.assertTrue(singleConnectionFactory.connection.isOpen());
         singleConnectionFactory.setPort(15345);
-        connection.close();
+        singleConnectionFactory.connection.close();
         int waitForReconnects = SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS + SingleConnectionFactory.CONNECTION_TIMEOUT_IN_MS  * 2;
         Thread.sleep(waitForReconnects);
         singleConnectionFactory.setPort(BrokerConnection.getDefaultPort());
         Thread.sleep(waitForReconnects);
-        connection = singleConnectionFactory.newConnection();
-        Assert.assertNotNull(connection);
-        Assert.assertTrue(connection.isOpen());
+        Assert.assertNotNull(singleConnectionFactory.connection);
+        Assert.assertTrue(singleConnectionFactory.connection.isOpen());
     }
     
     private static class TestConnectionListener implements ConnectionListener {

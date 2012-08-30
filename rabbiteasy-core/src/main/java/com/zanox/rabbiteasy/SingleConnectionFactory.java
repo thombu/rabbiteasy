@@ -54,11 +54,10 @@ public class SingleConnectionFactory extends ConnectionFactory {
     public static final int CONNECTION_RETRIEVAL_APPROACHES = 3;
     public static final int CONNECTION_ESTABLISH_INTERVAL_IN_MS = 500;
     
-    private ShutdownListener connectionShutdownListener;
-    private List<ConnectionListener> connectionListeners;
-
-    private volatile Connection connection;
-    private volatile State state = State.NEVER_CONNECTED;
+    ShutdownListener connectionShutdownListener;
+    List<ConnectionListener> connectionListeners;
+    volatile Connection connection;
+    volatile State state = State.NEVER_CONNECTED;
 
     private final Object operationOnConnectionMonitor = new Object();
 
@@ -248,7 +247,7 @@ public class SingleConnectionFactory extends ConnectionFactory {
                     establishConnection();
                     return;
                 } catch (IOException e) {
-                    LOGGER.info("Next reconnect attempt in {}", CONNECTION_ESTABLISH_INTERVAL_IN_MS);
+                    LOGGER.info("Next reconnect attempt in {} ms", CONNECTION_ESTABLISH_INTERVAL_IN_MS);
                     try {
                         Thread.sleep(CONNECTION_ESTABLISH_INTERVAL_IN_MS);
                     } catch (InterruptedException ie) {
