@@ -55,11 +55,11 @@ public class SingleConnectionFactoryIT {
         Connection connection = singleConnectionFactory.newConnection();
         Assert.assertNotNull(connection);
         Assert.assertTrue(connection.isOpen());
-        singleConnectionFactory.setHost("unreachablehostnamethatdoesnotexist");
+        singleConnectionFactory.setPort(15345);
         connection.close();
-        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 3);
-        singleConnectionFactory.setHost(BrokerConnection.getDefaultHost());
-        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS * 2);
+        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS + SingleConnectionFactory.CONNECTION_TIMEOUT_IN_MS  * 2);
+        singleConnectionFactory.setPort(BrokerConnection.getDefaultPort());
+        Thread.sleep(SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS + SingleConnectionFactory.CONNECTION_TIMEOUT_IN_MS  * 2);
         connection = singleConnectionFactory.newConnection();
         Assert.assertNotNull(connection);
         Assert.assertTrue(connection.isOpen());
