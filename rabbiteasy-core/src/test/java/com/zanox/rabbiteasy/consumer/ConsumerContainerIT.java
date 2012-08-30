@@ -1,20 +1,21 @@
 package com.zanox.rabbiteasy.consumer;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.rabbitmq.client.Connection;
 import com.zanox.rabbiteasy.Message;
 import com.zanox.rabbiteasy.SingleConnectionFactory;
 import com.zanox.rabbiteasy.TestBrokerSetup;
 import com.zanox.rabbiteasy.publisher.MessagePublisher;
 import com.zanox.rabbiteasy.publisher.SimplePublisher;
-import junit.framework.Assert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import sun.management.jmxremote.SingleEntryRegistry;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class ConsumerContainerIT {
