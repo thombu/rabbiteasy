@@ -2,6 +2,7 @@ package com.zanox.rabbiteasy.publisher;
 
 import com.rabbitmq.client.Connection;
 import com.zanox.rabbiteasy.Message;
+import com.zanox.rabbiteasy.SingleConnectionFactory;
 import com.zanox.rabbiteasy.TestBrokerSetup;
 import org.junit.Test;
 
@@ -31,8 +32,12 @@ public class SimplePublisherIT extends MessagePublisherIT {
         Thread.sleep(100);
         brokerAssert.queueSize(TestBrokerSetup.TEST_QUEUE, 1);
         Connection connection = singleConnectionFactory.newConnection();
+        singleConnectionFactory.setPort(15345);
         connection.close();
-        Thread.sleep(1000);
+        int waitForReconnects = SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS + SingleConnectionFactory.CONNECTION_TIMEOUT_IN_MS  * 2;
+        Thread.sleep(waitForReconnects);
+        singleConnectionFactory.setPort(brokerSetup.getPort());
+        Thread.sleep(waitForReconnects);
         publisher.send(message);
         Thread.sleep(100);
         brokerAssert.queueSize(TestBrokerSetup.TEST_QUEUE, 2);
