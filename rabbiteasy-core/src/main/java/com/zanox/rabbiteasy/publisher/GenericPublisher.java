@@ -185,7 +185,7 @@ public class GenericPublisher implements MessagePublisher {
         }
     }
 
-    protected void publishMessage(Message message, DeliveryOptions deliveryOptions, Channel channel)
+    static void publishMessage(Message message, DeliveryOptions deliveryOptions, Channel channel)
             throws IOException {
         // assure we have a timestamp
         if (message.getBasicProperties().getTimestamp() == null) {
@@ -208,10 +208,8 @@ public class GenericPublisher implements MessagePublisher {
     }
 
     protected void createChannel() throws IOException {
-        if (channel == null) {
-            Connection connection = connectionFactory.newConnection();
-            channel = connection.createChannel();
-        }
+        Connection connection = connectionFactory.newConnection();
+        channel = connection.createChannel();
     }
 
     protected void initChannel() throws IOException {
