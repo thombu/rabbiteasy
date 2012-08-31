@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class ConfirmedPublisher extends ManagedPublisher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericPublisher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmedPublisher.class);
 
     public ConfirmedPublisher(ConnectionFactory connectionFactory) {
         super(connectionFactory);

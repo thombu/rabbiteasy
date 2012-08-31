@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class SimplePublisher extends ManagedPublisher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionalPublisher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimplePublisher.class);
 
     public SimplePublisher(ConnectionFactory connectionFactory) {
         super(connectionFactory);
