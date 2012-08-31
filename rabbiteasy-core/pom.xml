@@ -8,6 +8,7 @@
 
 	<artifactId>rabbiteasy-core</artifactId>
     <name>RabbitEasy Core</name>
+    <version>${project.parent.version}</version>
 
 	<dependencies>
 		<dependency>
