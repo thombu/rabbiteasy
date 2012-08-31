@@ -32,6 +32,8 @@ public class EventPublisher {
     Map<Class<?>, PublisherConfiguration> publisherConfigurations =
             new HashMap<Class<?>, PublisherConfiguration>();
 
+    ThreadLocal<Map<Class<?>, MessagePublisher>> publishers = new ThreadLocal<Map<Class<?>, MessagePublisher>>();
+
     @Inject
     public EventPublisher(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
@@ -64,18 +66,38 @@ public class EventPublisher {
             return;
         }
         PublisherConfiguration publisherConfiguration = publisherConfigurations.get(eventType);
+        MessagePublisher publisher = providePublisher(publisherConfiguration.reliability, eventType);
         Message message = buildMessage(publisherConfiguration, event);
-        MessagePublisher messagePublisher = new GenericPublisher(connectionFactory, publisherConfiguration.reliability);
         try {
             LOGGER.info("Publishing event of type {}", eventType.getSimpleName());
-            messagePublisher.publish(message, publisherConfiguration.deliveryOptions);
+            publisher.publish(message, publisherConfiguration.deliveryOptions);
             LOGGER.info("Successfully published event of type {}", eventType.getSimpleName());
         } catch (IOException e) {
             LOGGER.error("Failed to publish event {}", eventType.getSimpleName(), e);
             throw e;
-        } finally {
-            messagePublisher.close();
         }
+    }
+
+    /**
+     * Provides a publisher with the specified reliability. Within the same thread, the same
+     * producer instance is provided for the given event type.
+     *
+     * @param reliability The desired publisher reliability
+     * @param eventType The event type
+     * @return The provided publisher
+     */
+    MessagePublisher providePublisher(PublisherReliability reliability, Class<?> eventType) {
+        Map<Class<?>, MessagePublisher> localPublishers = publishers.get();
+        if (localPublishers == null) {
+            localPublishers = new HashMap<Class<?>, MessagePublisher>();
+            publishers.set(localPublishers);
+        }
+        MessagePublisher publisher = localPublishers.get(eventType);
+        if (publisher == null) {
+            publisher = new GenericPublisher(connectionFactory, reliability);
+            localPublishers.put(eventType, publisher);
+        }
+        return publisher;
     }
 
     /**
