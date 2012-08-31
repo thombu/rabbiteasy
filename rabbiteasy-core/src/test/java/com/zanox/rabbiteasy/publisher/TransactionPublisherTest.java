@@ -23,7 +23,7 @@ public class TransactionPublisherTest extends MessagePublisherTest {
 		expectLastCall().once();
 		PowerMock.replayAll();
 
-		publisher.send(message);
+		publisher.publish(message);
 
 		PowerMock.verifyAll();
 	}

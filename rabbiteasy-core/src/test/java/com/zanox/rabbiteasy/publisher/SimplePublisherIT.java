@@ -11,41 +11,16 @@ import java.io.IOException;
 public class SimplePublisherIT extends MessagePublisherIT {
 
     @Test
-    public void shouldSendMessage() throws Exception {
+    public void shouldPublishMessage() throws Exception {
         SimplePublisher publisher = new SimplePublisher(singleConnectionFactory);
         Message message = new Message()
                 .exchange(TestBrokerSetup.TEST_EXCHANGE)
                 .routingKey(TestBrokerSetup.TEST_ROUTING_KEY)
                 .body("abc");
 
-        publisher.send(message);
+        publisher.publish(message);
         Thread.sleep(100);
         brokerAssert.messageInQueue(TestBrokerSetup.TEST_QUEUE, message.getBodyAs(String.class));
-    }
-
-    @Test
-    public void shouldRecoverFromConnectionLoss() throws Exception {
-        TransactionalPublisher publisher = new TransactionalPublisher(singleConnectionFactory);
-        Message message = new Message()
-                .exchange(TestBrokerSetup.TEST_EXCHANGE)
-                .routingKey(TestBrokerSetup.TEST_ROUTING_KEY);
-
-        publisher.send(message);
-        Thread.sleep(100);
-        brokerAssert.queueSize(TestBrokerSetup.TEST_QUEUE, 1);
-        Connection connection = singleConnectionFactory.newConnection();
-        singleConnectionFactory.setPort(15345);
-        connection.close();
-        int waitForReconnects = SingleConnectionFactory.CONNECTION_ESTABLISH_INTERVAL_IN_MS + SingleConnectionFactory.CONNECTION_TIMEOUT_IN_MS * 2;
-        Thread.sleep(waitForReconnects);
-        try {
-            publisher.send(message);
-        } catch (IOException e) { }
-        singleConnectionFactory.setPort(brokerSetup.getPort());
-        Thread.sleep(waitForReconnects);
-        publisher.send(message);
-        Thread.sleep(waitForReconnects);
-        brokerAssert.queueSize(TestBrokerSetup.TEST_QUEUE, 2);
     }
 
 }

@@ -62,11 +62,11 @@ public class EventBinderIT {
         eventBinder.bind(TestEventTwo.class).toQueue(TestSetup.TEST_QUEUE_TWO);
         eventBinder.initialize();
 
-        publisher.send(new Message().queue(TestSetup.TEST_QUEUE_ONE));
-        publisher.send(new Message().queue(TestSetup.TEST_QUEUE_ONE));
-        publisher.send(new Message().queue(TestSetup.TEST_QUEUE_TWO));
-        publisher.send(new Message().queue(TestSetup.TEST_QUEUE_TWO));
-        publisher.send(new Message().queue(TestSetup.TEST_QUEUE_TWO));
+        publisher.publish(new Message().queue(TestSetup.TEST_QUEUE_ONE));
+        publisher.publish(new Message().queue(TestSetup.TEST_QUEUE_ONE));
+        publisher.publish(new Message().queue(TestSetup.TEST_QUEUE_TWO));
+        publisher.publish(new Message().queue(TestSetup.TEST_QUEUE_TWO));
+        publisher.publish(new Message().queue(TestSetup.TEST_QUEUE_TWO));
 
         // Wait until messages are completely consumed
         Thread.sleep(100);

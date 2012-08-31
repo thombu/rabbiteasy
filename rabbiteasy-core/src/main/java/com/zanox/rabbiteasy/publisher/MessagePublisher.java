@@ -16,21 +16,38 @@ import java.util.List;
 public interface MessagePublisher {
 
     /**
-     * Sends a message to the broker using no delivery options.
+     * Publishes a message to the broker using no delivery options.
      * 
-     * @param message The message to be sent
-     * @throws IOException if the message could not be sent
+     * @param message The message to publish
+     * @throws IOException if the message could not be published
      */
-    void send(Message message) throws IOException;
+    void publish(Message message) throws IOException;
 
     /**
-     * Sends a message to the broker using the given delivery options.
+     * Publishes a message to the broker using the given delivery options.
      * 
-     * @param message The message to be sent
+     * @param message The message to publish
      * @param deliveryOptions The delivery options
-     * @throws IOException if the message could not be sent
+     * @throws IOException if the message could not be published
      */
-    void send(Message message, DeliveryOptions deliveryOptions) throws IOException;
+    void publish(Message message, DeliveryOptions deliveryOptions) throws IOException;
+
+    /**
+     * Publishes messages to the broker using no delivery options.
+     *
+     * @param messages The list of messages to publish
+     * @throws IOException if the message could not be published
+     */
+    void publish(List<Message> messages) throws IOException;
+
+    /**
+     * Publishes messages to the broker using the given delivery options.
+     *
+     * @param messages The list of messages to publish
+     * @param deliveryOptions The delivery options
+     * @throws IOException if the message could not be published
+     */
+    void publish(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException;
     
     /**
      * Closes the publisher by closing its underlying channel.
@@ -39,21 +56,4 @@ public interface MessagePublisher {
      * is already closing or is already closed.
      */
     void close() throws IOException;
-
-    /**
-     * Sends messages to the broker using no delivery options.
-     *
-     * @param messages The list of messages to send
-     * @throws IOException if the message could not be sent
-     */
-    void send(List<Message> messages) throws IOException;
-
-    /**
-     * Sends messages to the broker using the given delivery options.
-     *
-     * @param messages The list of messages to send
-     * @param deliveryOptions The delivery options
-     * @throws IOException if the message could not be sent
-     */
-    void send(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException;
 }

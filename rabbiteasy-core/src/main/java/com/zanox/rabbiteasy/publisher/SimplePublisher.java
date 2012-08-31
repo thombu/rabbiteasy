@@ -31,14 +31,14 @@ public class SimplePublisher extends DiscretePublisher {
      * {@inheritDoc}
      */
     @Override
-    public void send(Message message, DeliveryOptions deliveryOptions) throws IOException {
+    public void publish(Message message, DeliveryOptions deliveryOptions) throws IOException {
         for (int attempt = 1; attempt <= DEFAULT_RETRY_ATTEMPTS; attempt++) {
             if (attempt > 1) {
                 LOGGER.info("Attempt {} to send message", attempt);
             }
 
             try {
-                Channel channel = initChannel();
+                Channel channel = provideChannel();
                 message.publish(channel, deliveryOptions);
                 return;
             } catch (IOException e) {
@@ -51,9 +51,9 @@ public class SimplePublisher extends DiscretePublisher {
      * {@inheritDoc}
      */
     @Override
-    public void send(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
+    public void publish(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
         for (Message message : messages) {
-            send(message, deliveryOptions);
+            publish(message, deliveryOptions);
         }
     }
 }

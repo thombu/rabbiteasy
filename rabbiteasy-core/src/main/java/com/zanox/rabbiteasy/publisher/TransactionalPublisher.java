@@ -32,29 +32,29 @@ public class TransactionalPublisher extends DiscretePublisher {
      * {@inheritDoc}
      */
     @Override
-    public void send(Message message, DeliveryOptions deliveryOptions) throws IOException {
-        send(Collections.<Message>singletonList(message), deliveryOptions);
+    public void publish(Message message, DeliveryOptions deliveryOptions) throws IOException {
+        publish(Collections.<Message>singletonList(message), deliveryOptions);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void send(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
+    public void publish(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
         for (int attempt = 1; attempt <= DEFAULT_RETRY_ATTEMPTS; attempt++) {
             if (attempt > 1) {
                 LOGGER.info("Attempt {} to send messages within transaction", attempt);
             }
 
             try {
-                Channel channel = initChannel();
+                Channel channel = provideChannel();
                 try {
                     for (Message message : messages) {
                         message.publish(channel, deliveryOptions);
                     }
-                    commitTransaction();
+                    commitTransaction(channel);
                 } catch (IOException e) {
-                    rollbackTransaction();
+                    rollbackTransaction(channel);
                     throw e;
                 }
                 return;
@@ -65,16 +65,16 @@ public class TransactionalPublisher extends DiscretePublisher {
     }
 
     @Override
-    protected Channel initChannel() throws IOException {
-        Channel channel = super.initChannel();
+    protected Channel provideChannel() throws IOException {
+        Channel channel = super.provideChannel();
         channel.txSelect();
         return  channel;
     }
 
-    protected void commitTransaction() throws IOException {
+    static void commitTransaction(Channel channel) throws IOException {
         try {
             LOGGER.info("Committing transaction");
-            getChannel().txCommit();
+            channel.txCommit();
             LOGGER.info("Transaction committed");
         } catch (IOException e) {
             LOGGER.error("Failed to commit transaction", e);
@@ -82,10 +82,10 @@ public class TransactionalPublisher extends DiscretePublisher {
         }
     }
 
-    protected void rollbackTransaction() throws IOException {
+    static void rollbackTransaction(Channel channel) throws IOException {
         try {
             LOGGER.info("Rolling back transaction");
-            getChannel().txRollback();
+            channel.txRollback();
             LOGGER.info("Transaction rolled back");
         } catch (IOException e) {
             LOGGER.error("Failed to roll back transaction", e);

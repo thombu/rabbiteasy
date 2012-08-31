@@ -1,16 +1,9 @@
 package com.zanox.rabbiteasy.publisher;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.zanox.rabbiteasy.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,33 +41,33 @@ public class GenericPublisher implements MessagePublisher {
      * {@inheritDoc}
      */
     @Override
-    public void send(Message message) throws IOException {
-        send(message, DeliveryOptions.NONE);
+    public void publish(Message message) throws IOException {
+        publish(message, DeliveryOptions.NONE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void send(List<Message> messages) throws IOException {
-        send(messages, DeliveryOptions.NONE);
+    public void publish(List<Message> messages) throws IOException {
+        publish(messages, DeliveryOptions.NONE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void send(Message message, DeliveryOptions deliveryOptions)
+    public void publish(Message message, DeliveryOptions deliveryOptions)
             throws IOException {
-        publisher.send(message, deliveryOptions);
+        publisher.publish(message, deliveryOptions);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void send(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
-        publisher.send(messages, deliveryOptions);
+    public void publish(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
+        publisher.publish(messages, deliveryOptions);
     }
 
     /**

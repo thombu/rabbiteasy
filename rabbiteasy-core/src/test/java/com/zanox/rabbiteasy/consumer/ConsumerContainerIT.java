@@ -87,7 +87,7 @@ public class ConsumerContainerIT {
                     .exchange(TestBrokerSetup.TEST_EXCHANGE)
                     .routingKey(TestBrokerSetup.TEST_ROUTING_KEY)
                     .body("" + i);
-            publisher.send(message);
+            publisher.publish(message);
         }
         // Sleep depending on the amount of messages sent but at least 100 ms, and at most 1 sec
         Thread.sleep(Math.max(100, Math.min(1000, MESSAGE_AMOUNT * 10)));

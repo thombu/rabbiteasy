@@ -1,6 +1,5 @@
 package com.zanox.rabbiteasy.publisher;
 
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -9,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,16 +34,16 @@ public abstract class DiscretePublisher implements MessagePublisher {
      * {@inheritDoc}
      */
     @Override
-    public void send(Message message) throws IOException {
-        send(message, DeliveryOptions.NONE);
+    public void publish(Message message) throws IOException {
+        publish(message, DeliveryOptions.NONE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void send(List<Message> messages) throws IOException {
-        send(messages, DeliveryOptions.NONE);
+    public void publish(List<Message> messages) throws IOException {
+        publish(messages, DeliveryOptions.NONE);
     }
 
     /**
@@ -72,21 +70,11 @@ public abstract class DiscretePublisher implements MessagePublisher {
      * @return The initialized or already open channel.
      * @throws IOException if the channel cannot be initialized
      */
-    protected Channel initChannel() throws IOException {
+    protected Channel provideChannel() throws IOException {
         if (channel == null || !channel.isOpen()) {
             Connection connection = connectionFactory.newConnection();
             channel = connection.createChannel();
         }
-        return channel;
-    }
-
-    /**
-     * Gets the currently used channel.
-     *
-     * @return The currently used channel
-     * @throws IOException
-     */
-    protected Channel getChannel() throws IOException {
         return channel;
     }
 

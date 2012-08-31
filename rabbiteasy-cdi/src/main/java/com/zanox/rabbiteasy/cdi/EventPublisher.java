@@ -68,7 +68,7 @@ public class EventPublisher {
         MessagePublisher messagePublisher = new GenericPublisher(connectionFactory, publisherConfiguration.reliability);
         try {
             LOGGER.info("Publishing event of type {}", eventType.getSimpleName());
-            messagePublisher.send(message, publisherConfiguration.deliveryOptions);
+            messagePublisher.publish(message, publisherConfiguration.deliveryOptions);
             LOGGER.info("Successfully published event of type {}", eventType.getSimpleName());
         } catch (IOException e) {
             LOGGER.error("Failed to publish event {}", eventType.getSimpleName(), e);
