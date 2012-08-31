@@ -9,7 +9,7 @@ import static org.easymock.EasyMock.expectLastCall;
 public class SimplePublisherTest extends MessagePublisherTest {
     
     @Test
-    public void shouldSendMessage() throws Exception {
+    public void shouldPublishMessage() throws Exception {
         Message message = new Message().exchange(TEST_EXCHANGE).routingKey(TEST_ROUTING_KEY);
         SimplePublisher publisher = new SimplePublisher(connectionFactory);
         

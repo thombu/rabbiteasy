@@ -1,17 +1,17 @@
 package com.zanox.rabbiteasy.publisher;
 
-import com.zanox.rabbiteasy.Message;
-import org.junit.Test;
-import org.powermock.api.easymock.PowerMock;
-
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 
+import org.junit.Test;
+import org.powermock.api.easymock.PowerMock;
+
+import com.zanox.rabbiteasy.Message;
 
 public class ConfirmedPublisherTest extends MessagePublisherTest {
     
     @Test
-    public void shouldSendMessageAndWaitForAck() throws Exception {
+    public void shouldPublishMessageAndWaitForAck() throws Exception {
         Message message = new Message().exchange(TEST_EXCHANGE).routingKey(TEST_ROUTING_KEY);
         ConfirmedPublisher publisher = new ConfirmedPublisher(connectionFactory);
         

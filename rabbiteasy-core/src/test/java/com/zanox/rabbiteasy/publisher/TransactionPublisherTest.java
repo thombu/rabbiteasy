@@ -10,7 +10,7 @@ import static org.easymock.EasyMock.expectLastCall;
 public class TransactionPublisherTest extends MessagePublisherTest {
 
 	@Test
-	public void shouldSendMessageAndWaitForAck() throws Exception {
+	public void shouldPublishMessageAndWaitForAck() throws Exception {
 		Message message = new Message().exchange(TEST_EXCHANGE).routingKey(TEST_ROUTING_KEY);
 		TransactionalPublisher publisher = new TransactionalPublisher(connectionFactory);
 
