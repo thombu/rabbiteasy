@@ -9,7 +9,6 @@
 
     <artifactId>rabbiteasy-cdi</artifactId>
     <name>RabbitEasy CDI</name>
-    <version>${project.parent.version}</version>
 
     <dependencies>
         <dependency>

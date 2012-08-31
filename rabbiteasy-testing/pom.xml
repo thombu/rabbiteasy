@@ -8,7 +8,6 @@
 
 	<artifactId>rabbiteasy-testing</artifactId>
     <name>RabbitEasy Testing</name>
-    <version>${project.parent.version}</version>
 
 	<dependencies>
 		<dependency>
