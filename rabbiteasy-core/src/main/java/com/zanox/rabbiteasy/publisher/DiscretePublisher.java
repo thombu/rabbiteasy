@@ -13,11 +13,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Discrete publishers manage channels on their own with help of the
+ * connection factory they are initialized with.
+ *
  * @author christian.bick
  */
-public abstract class ManagedPublisher implements MessagePublisher {
+public abstract class DiscretePublisher implements MessagePublisher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManagedPublisher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscretePublisher.class);
 
     public static final int DEFAULT_RETRY_ATTEMPTS = 3;
     public static final int DEFAULT_RETRY_INTERVAL = 1000;
@@ -25,20 +28,29 @@ public abstract class ManagedPublisher implements MessagePublisher {
     private Channel channel;
     private ConnectionFactory connectionFactory;
 
-    public ManagedPublisher(ConnectionFactory connectionFactory) {
+    public DiscretePublisher(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(Message message) throws IOException {
         send(message, DeliveryOptions.NONE);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(List<Message> messages) throws IOException {
         send(messages, DeliveryOptions.NONE);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() throws IOException {
         if (channel == null) {
@@ -54,37 +66,38 @@ public abstract class ManagedPublisher implements MessagePublisher {
         LOGGER.debug("Successfully closed publisher channel");
     }
 
-    protected Channel createChannel() throws IOException {
-        Connection connection = connectionFactory.newConnection();
-        channel = connection.createChannel();
+    /**
+     * Initializes a channel if there is not already an open channel.
+     *
+     * @return The initialized or already open channel.
+     * @throws IOException if the channel cannot be initialized
+     */
+    protected Channel initChannel() throws IOException {
+        if (channel == null || !channel.isOpen()) {
+            Connection connection = connectionFactory.newConnection();
+            channel = connection.createChannel();
+        }
         return channel;
     }
 
+    /**
+     * Gets the currently used channel.
+     *
+     * @return The currently used channel
+     * @throws IOException
+     */
     protected Channel getChannel() throws IOException {
         return channel;
     }
 
-    protected void publishMessage(Message message, DeliveryOptions deliveryOptions)
-            throws IOException {
-        // assure we have a timestamp
-        if (message.getBasicProperties().getTimestamp() == null) {
-            message.getBasicProperties().builder().timestamp(new Date());
-        }
-
-        AMQP.BasicProperties basicProperties = message.getBasicProperties();
-        String exchange = message.getExchange();
-        String routingKey = message.getRoutingKey();
-        boolean mandatory = deliveryOptions == DeliveryOptions.MANDATORY;
-        boolean immediate = deliveryOptions == DeliveryOptions.IMMEDIATE;
-        byte[] bodyContent = message.getBodyContent();
-
-        LOGGER.info("Publishing message to exchange '{}' with routing key '{}' (deliveryOptions: {}, persistent: {})",
-                new Object[] { exchange, routingKey, deliveryOptions, basicProperties.getDeliveryMode() == 2 });
-
-        channel.basicPublish(exchange, routingKey, mandatory, immediate, basicProperties, bodyContent);
-        LOGGER.info("Successfully published message to exchange '{}' with routing key '{}'", exchange, routingKey);
-    }
-
+    /**
+     * Handles an IOException depending on the already used attempts to
+     * send a message. Also performs a soft reset of the currently used channel.
+     *
+     * @param attempt Current attempt count
+     * @param ioException The thrown exception
+     * @throws IOException if the maximum amount of attempts is exceeded
+     */
     protected void handleIoException(int attempt, IOException ioException) throws IOException {
         if (channel != null && channel.isOpen()) {
             try {

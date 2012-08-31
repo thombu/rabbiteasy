@@ -19,7 +19,7 @@ import java.util.List;
  * @author soner.dastan
  * 
  */
-public class SimplePublisher extends ManagedPublisher {
+public class SimplePublisher extends DiscretePublisher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimplePublisher.class);
 
@@ -27,6 +27,9 @@ public class SimplePublisher extends ManagedPublisher {
         super(connectionFactory);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(Message message, DeliveryOptions deliveryOptions) throws IOException {
         for (int attempt = 1; attempt <= DEFAULT_RETRY_ATTEMPTS; attempt++) {
@@ -35,8 +38,8 @@ public class SimplePublisher extends ManagedPublisher {
             }
 
             try {
-                initChannel();
-                publishMessage(message, deliveryOptions);
+                Channel channel = initChannel();
+                message.publish(channel, deliveryOptions);
                 return;
             } catch (IOException e) {
                 handleIoException(attempt, e);
@@ -44,17 +47,13 @@ public class SimplePublisher extends ManagedPublisher {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
         for (Message message : messages) {
             send(message, deliveryOptions);
-        }
-    }
-
-    protected void initChannel() throws IOException {
-        Channel channel = getChannel();
-        if (channel == null || !channel.isOpen()) {
-            createChannel();
         }
     }
 }

@@ -19,7 +19,7 @@ import java.util.List;
  * @author soner.dastan
  *
  */
-public class ConfirmedPublisher extends ManagedPublisher {
+public class ConfirmedPublisher extends DiscretePublisher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmedPublisher.class);
 
@@ -27,6 +27,9 @@ public class ConfirmedPublisher extends ManagedPublisher {
         super(connectionFactory);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(Message message, DeliveryOptions deliveryOptions) throws IOException {
         for (int attempt = 1; attempt <= DEFAULT_RETRY_ATTEMPTS; attempt++) {
@@ -35,8 +38,8 @@ public class ConfirmedPublisher extends ManagedPublisher {
             }
 
             try {
-                initChannel();
-                publishMessage(message, deliveryOptions);
+                Channel channel = initChannel();
+                message.publish(channel, deliveryOptions);
                 LOGGER.info("Waiting for publisher ack");
                 getChannel().waitForConfirmsOrDie();
                 LOGGER.info("Received publisher ack");
@@ -50,6 +53,9 @@ public class ConfirmedPublisher extends ManagedPublisher {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
         for (Message message : messages) {
@@ -57,11 +63,10 @@ public class ConfirmedPublisher extends ManagedPublisher {
         }
     }
 
-    protected void initChannel() throws IOException {
-        Channel channel = getChannel();
-        if (channel == null || !channel.isOpen()) {
-            channel = createChannel();
-            channel.confirmSelect();
-        }
+    @Override
+    protected Channel initChannel() throws IOException {
+        Channel channel = super.initChannel();
+        channel.confirmSelect();
+        return channel;
     }
 }

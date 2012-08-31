@@ -1,9 +1,16 @@
 package com.zanox.rabbiteasy;
 
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
+import com.zanox.rabbiteasy.publisher.DeliveryOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Date;
 
 /**
  * A message encapsulates the delivery content of a delivery from a broker. It wraps the body and
@@ -14,6 +21,8 @@ import java.nio.charset.Charset;
  * 
  */
 public class Message {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(Message.class);
 
 	public static final Charset DEFAULT_MESSAGE_CHARSET = Charset.forName("UTF-8");
 	public static final int DELIVERY_MODE_PERSISTENT = 2;
@@ -214,6 +223,12 @@ public class Message {
 		return this;
 	}
 
+    /**
+     * Sets the content charset encoding of this message.
+     *
+     * @param charset The charset encoding
+     * @return The modified message
+     */
     public Message contentEncoding(String charset) {
         basicProperties = basicProperties.builder()
                 .contentEncoding(charset)
@@ -221,11 +236,50 @@ public class Message {
         return this;
     }
 
+    /**
+     * Sets the content type of this message.
+     *
+     * @param contentType The content type
+     * @return The modified message
+     */
     public Message contentType(String contentType) {
         basicProperties = basicProperties.builder()
                 .contentType(contentType)
                 .build();
         return this;
+    }
+
+    /**
+     * Publishes a message via the given channel.
+     *
+     * @param channel The channel used to publish the message
+     * @throws IOException
+     */
+    public void publish(Channel channel) throws IOException{
+        publish(channel, DeliveryOptions.NONE);
+    }
+
+    /**
+     * Publishes a message via the given channel while using the specified delivery options.
+     *
+     * @param channel The channel used to publish the message on
+     * @param deliveryOptions The delivery options to use
+     * @throws IOException
+     */
+    public void publish(Channel channel, DeliveryOptions deliveryOptions) throws IOException {
+        // Assure to have a timestamp
+        if (basicProperties.getTimestamp() == null) {
+            basicProperties.builder().timestamp(new Date());
+        }
+
+        boolean mandatory = deliveryOptions == DeliveryOptions.MANDATORY;
+        boolean immediate = deliveryOptions == DeliveryOptions.IMMEDIATE;
+
+        LOGGER.info("Publishing message to exchange '{}' with routing key '{}' (deliveryOptions: {}, persistent: {})",
+                new Object[] { exchange, routingKey, deliveryOptions, basicProperties.getDeliveryMode() == 2 });
+
+        channel.basicPublish(exchange, routingKey, mandatory, immediate, basicProperties, bodyContent);
+        LOGGER.info("Successfully published message to exchange '{}' with routing key '{}'", exchange, routingKey);
     }
 
 }

@@ -20,7 +20,7 @@ import java.util.List;
  * @author soner.dastan
  *
  */
-public class TransactionalPublisher extends ManagedPublisher {
+public class TransactionalPublisher extends DiscretePublisher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionalPublisher.class);
 
@@ -28,11 +28,17 @@ public class TransactionalPublisher extends ManagedPublisher {
         super(connectionFactory);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(Message message, DeliveryOptions deliveryOptions) throws IOException {
         send(Collections.<Message>singletonList(message), deliveryOptions);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(List<Message> messages, DeliveryOptions deliveryOptions) throws IOException {
         for (int attempt = 1; attempt <= DEFAULT_RETRY_ATTEMPTS; attempt++) {
@@ -41,10 +47,10 @@ public class TransactionalPublisher extends ManagedPublisher {
             }
 
             try {
-                initChannel();
+                Channel channel = initChannel();
                 try {
                     for (Message message : messages) {
-                        publishMessage(message, deliveryOptions);
+                        message.publish(channel, deliveryOptions);
                     }
                     commitTransaction();
                 } catch (IOException e) {
@@ -58,12 +64,11 @@ public class TransactionalPublisher extends ManagedPublisher {
         }
     }
 
-    protected void initChannel()  throws IOException {
-        Channel channel = getChannel();
-        if (channel == null || !channel.isOpen()) {
-            channel = createChannel();
-            channel.txSelect();
-        }
+    @Override
+    protected Channel initChannel() throws IOException {
+        Channel channel = super.initChannel();
+        channel.txSelect();
+        return  channel;
     }
 
     protected void commitTransaction() throws IOException {
