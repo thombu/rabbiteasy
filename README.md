@@ -423,3 +423,7 @@ public class MyEvent implements ContainsData {
     }
 }
 ```
+
+## Example application
+
+For a full example, have a look at our [example application](https://github.com/zanox/rabbitordering).
