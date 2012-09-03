@@ -116,7 +116,7 @@ publishing messages without having to take care of scenarios like connection abo
 
 ### Simple Publisher
 
-A simple publisher publishes messages in a fire-and-forget manner. Publishes messages this way, there is no guarantee
+A simple publisher publishes messages in a fire-and-forget manner. Publishing messages this way, there is no guarantee
 that messages reach there destination queues. Choose this publisher for sending messages that are of low importance.
 
 Publishing a message with a simple publisher:
@@ -240,10 +240,17 @@ consumerContainer.startAllConsumers();
 ## Using event binders
 
 Trying to integrate AMQP and RabbitMQ into JEE with JMS is a rocky road with many compromises. This is,
-why we suggest to integrate RabbitMQ into JEE via bindings between CDI events and broker messages.
-To produce messages, one binds CDI events to exchanges and to consume messages, one binds CDI events to queues.
+why we suggest to integrate RabbitMQ into JEE via bindings between CDI events and message brokers:
 
-To bind events, create a subclass of event binder and override its bindEvents() method:
+- to fire CDI events remotely, bind them to be published as messages to broker exchanges 
+- to observe CDI events remotely, bind them to be consumed as messages from broker queues
+
+You could also look at it the other way round:
+
+- to publish messages to broker exchanges, bind them to fired CDI events
+- to consume messages from broker queues, bind them to observed CDI events
+
+To bind events, first create a subclass of EventBinder and override its bindEvents() method:
 
 ```Java
 public class MyEventBinder extends EventBinder {
@@ -288,8 +295,8 @@ public class MyEventBinder extends EventBinder {
 }
 ```
 
-To enable bindings, inject an instance of your event binder and call its initialize() method. Here is
-an example how to enable an event binder in a servlet context listener:
+To enable your bindings, inject an instance of your event binder and call its initialize() method. Here is
+an example of how to enable an event binder in a servlet context listener:
 
 ```Java
 public class MyServletContextListener implements ServletContextListener  {
