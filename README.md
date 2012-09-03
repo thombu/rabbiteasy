@@ -261,56 +261,6 @@ public class MyEventBinder extends EventBinder {
 }
 ```
 
-Per default, localhost and the standard AMQP port 5672 are used to establish connections. You can
-configure the used connection for your binder via annotations:
-
-```Java
-@ConnectionConfiguration(host = "my.host", port=1337)
-public class MyEventBinder extends EventBinder {
-    @Override
-    protected void bindEvents() {
-        // Your event bindings
-    }
-}
-```
-
-You can also define multiple connection configurations which can be enabled and disabled with profiles.
-The system property "rabbiteasy.profile" can be used to define the profile name.
-
-In the example below, three profiles are defined: One for a staging and one for a quality environment. If none
-of those profiles is given in the system property then the first configuration is taken because it has no
-profile property and is such is treated as default configuration:
-
-```Java
-@ConnectionConfigurations({
-        @ConnectionConfiguration(host = "live.host"),
-        @ConnectionConfiguration(profile="staging", host = "staging.host"),
-        @ConnectionConfiguration(profile="quality", host = "quality.host")
-})
-public class MyEventBinder extends EventBinder {
-    @Override
-    protected void bindEvents() {
-        // Your event bindings
-    }
-}
-```
-
-To enable your bindings, inject an instance of your event binder and call its initialize() method. Here is
-an example of how to enable an event binder in a servlet context listener:
-
-```Java
-public class MyServletContextListener implements ServletContextListener  {
-    @Inject MyEventBinder eventBinder;
-
-    public void contextInitialized(ServletContextEvent e) {
-        eventBinder.initialize();
-    }
-
-}
-```
-
-Important: Ensure that your CDI provider is already initialized at this point.
-
 ## Binding events to exchanges
 
 This is how you bind an event to an exchange to publish it:
@@ -362,6 +312,60 @@ public class MyEventObserver {
     }
 }
 ```
+
+## Connection configuration
+
+Per default, localhost and the standard AMQP port 5672 are used to establish connections. You can
+configure the used connection for your binder via annotations:
+
+```Java
+@ConnectionConfiguration(host = "my.host", port=1337)
+public class MyEventBinder extends EventBinder {
+    @Override
+    protected void bindEvents() {
+        // Your event bindings
+    }
+}
+```
+
+You can also define multiple connection configurations which can be enabled and disabled with profiles.
+The system property "rabbiteasy.profile" can be used to define the profile name.
+
+In the example below, three profiles are defined: One for a staging and one for a quality environment. If none
+of those profiles is given in the system property then the first configuration is taken because it has no
+profile property and is such is treated as default configuration:
+
+```Java
+@ConnectionConfigurations({
+        @ConnectionConfiguration(host = "live.host"),
+        @ConnectionConfiguration(profile="staging", host = "staging.host"),
+        @ConnectionConfiguration(profile="quality", host = "quality.host")
+})
+public class MyEventBinder extends EventBinder {
+    @Override
+    protected void bindEvents() {
+        // Your event bindings
+    }
+}
+```
+
+## Binder initialization
+
+To enable your bindings, inject an instance of your event binder and call its initialize() method. Here is
+an example of how to enable an event binder in a servlet context listener:
+
+```Java
+public class MyServletContextListener implements ServletContextListener  {
+    @Inject MyEventBinder eventBinder;
+
+    public void contextInitialized(ServletContextEvent e) {
+        eventBinder.initialize();
+    }
+
+}
+```
+
+Important: Ensure that your CDI provider is already initialized at this point.
 
 ## Events with content
 
