@@ -96,6 +96,21 @@ Integer contentAsInteger = message.getBodyAs(Integer.class);
 Long contentAsLong = message.getBodyAs(Long.class);
 ```
 
+Publishing a message:
+
+```Java
+ConnectionFactory connectionFactory = new SingleConnectionFactory();
+Channel channel = connectionFactory.newConnection().createChannel();
+
+Message message = new Message()
+        .body("123")
+        .publish(channel);
+```
+
+Managing connections and channels oneself easily becomes complex and repatitive.
+Publishers manage connections and channels themselves and provide a convenient way of 
+publishing messages without having to take care of scenarios like connection aborts.
+
 ## Publishers
 
 ### Simple publisher
