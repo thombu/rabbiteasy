@@ -313,7 +313,25 @@ public class MyEventObserver {
 }
 ```
 
-## Connection configuration
+## Binder initialization
+
+To enable your bindings, inject an instance of your event binder and call its initialize() method. Here is
+an example of how to enable an event binder in a servlet context listener:
+
+```Java
+public class MyServletContextListener implements ServletContextListener  {
+    @Inject MyEventBinder eventBinder;
+
+    public void contextInitialized(ServletContextEvent e) {
+        eventBinder.initialize();
+    }
+
+}
+```
+
+Important: Ensure that your CDI provider is already initialized at this point.
+
+## Binder configuration
 
 Per default, localhost and the standard AMQP port 5672 are used to establish connections. You can
 configure the used connection for your binder via annotations:
@@ -348,24 +366,6 @@ public class MyEventBinder extends EventBinder {
     }
 }
 ```
-
-## Binder initialization
-
-To enable your bindings, inject an instance of your event binder and call its initialize() method. Here is
-an example of how to enable an event binder in a servlet context listener:
-
-```Java
-public class MyServletContextListener implements ServletContextListener  {
-    @Inject MyEventBinder eventBinder;
-
-    public void contextInitialized(ServletContextEvent e) {
-        eventBinder.initialize();
-    }
-
-}
-```
-
-Important: Ensure that your CDI provider is already initialized at this point.
 
 ## Events with content
 
