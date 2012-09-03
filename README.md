@@ -225,7 +225,7 @@ consumerContainer.addConsumer(new MyConsumer(), "my.queue");
 consumerContainer.startAllConsumers();
 ```
 
-Adding a consumer and an auto-acknowledging consumer:
+Adding an auto-acknowledging consumer:
 
 ```Java
 ConnectionFactory connectionFactory = new SingleConnectionFactory();
