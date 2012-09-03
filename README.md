@@ -11,8 +11,8 @@ applications.
 ### Core
 
 - connection factory for long living single connections
-- intuitive producers, also for publisher confirms and transactions
-- managed consumers that automatically re-attach to the broker after connection loss
+- managed simple, confirmed and transactional publishers that recover from connection loss
+- managed consumers that recover from connection loss and re-attach to the broker
 
 Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-core%22)
 and read the [documentation](https://github.com/zanox/rabbiteasy#core-1)
@@ -20,8 +20,8 @@ and read the [documentation](https://github.com/zanox/rabbiteasy#core-1)
 ### CDI
 
 - convenient integration for JEE6/CDI applications
-- publishing of AMQP messages for CDI events to exchanges
-- consuming of AMQP messages as CDI events from queues 
+- publishing of AMQP messages to exchanges for CDI events
+- consuming of AMQP messages from queues as CDI events  
 
 Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-cdi%22)
 and read the [documentation](https://github.com/zanox/rabbiteasy#cdi-1)
@@ -37,11 +37,12 @@ Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22ra
 
 ## Connection Factory
 
-The single connection factory always provides the same connection on calling newConnection() and reestablishes
-this connection as soon as the connection is lost.
+A single connection factory always provides the same connection on calling newConnection() as long as the connection
+persists. A new connection is established as soon as the current connection is lost.
 
-The connection factory extends the connection factory from the RabbitMQ standard library and you would use it just
-as you would use this factory but don't have to care about creating too many connections.
+SingleConnectionFactory extends ConnectionFactory from the RabbitMQ standard library and is used just
+the same way as the factory from the standard library. The only difference: From now on you don't have
+to care about too many connections being established to a broker any more.
 
 Creating a single connection factory:
 
@@ -54,10 +55,7 @@ connectionFactory.setPort(4224);
 ## Messages
 
 A message object was introduced to provide convenient and save configuration of a message and to improve the way
-how message content is read.
-
-A message is built using a builder pattern. Message destination, content, properties and delivery options can be
-set this way.
+how message content is written and read. A message is created using a builder pattern.
 
 Creating a message without properties:
 
@@ -81,9 +79,10 @@ Message message = new Message(basicProperties)
         .body("My message content");
 ```
 
-Note: Setting the body will also automatically adjust the Content-Type and encoding in the message properties.
+Note: Setting the body will also automatically adjust the content type and encoding in the message properties.
 
-Also, some convenient methods are provided to read a message's content.
+Also, a convenient method is provided to read a message's content and to transform it into the desired Java
+type directly.
 
 Reading content from a message:
 
@@ -108,17 +107,17 @@ Message message = new Message()
 ```
 
 Managing connections and channels oneself easily becomes complex and repatitive.
-Publishers manage connections and channels themselves and provide a convenient way of 
+Message publishers manage connections and channels themselves and provide a convenient way of 
 publishing messages without having to take care of scenarios like connection aborts.
 
-## Publishers
+## Message Publishers
 
-### Simple publisher
+### Simple Publisher
 
-A simple publisher sends messages in a fire-and-forget manner. Sending messages this way, there is no guarantee
+A simple publisher publishes messages in a fire-and-forget manner. Publishes messages this way, there is no guarantee
 that messages reach there destination queues. Choose this publisher for sending messages that are of low importance.
 
-Sending a message with a simple publisher:
+Publishing a message with a simple publisher:
 
 ```Java
 ConnectionFactory connectionFactory = new SingleConnectionFactory();
@@ -128,11 +127,11 @@ Message message = new Message()
         .body("My message content");
 
 Publisher publisher = new SimplePublisher(connectionFactory);
-publisher.send(message);
+publisher.publish(message);
 publisher.close();
 ```
 
-Sending multiple messages with a simple publisher:
+Publishing multiple messages with a simple publisher:
 
 ```Java
 ConnectionFactory connectionFactory = new SingleConnectionFactory();
@@ -149,14 +148,14 @@ messageList.add(messageOne);
 messageList.add(messageTwo);
 
 MessagePublisher publisher = new SimplePublisher(connectionFactory);
-publisher.send(messageList);
+publisher.publish(messageList);
 publisher.close();
 ```
 
 ### Confirmed Publisher
 
-Confirmed publishers are used to send messages so that every single message is confirmed by the broker to have
-reaches all its destination queues. Choose this publisher for sending messages that are of importance but
+Confirmed publishers are used to publish messages so that every single message is confirmed by the broker to have
+reached all its destination queues. Choose this publisher for publishing messages that are of importance but
 where delivery can fail independently of other messages.
 
 Initializing a confirmed publisher:
@@ -167,8 +166,8 @@ MessagePublisher publisher = new ConfirmedPublisher(connectionFactory);
 
 ### Transactional Publisher
 
-Transactional publishers are used to send a set of messages for which a delivery shall succeed for all messages or
-none. Choose this publisher for sending multiple messages for which it is important that delivery succeeds for
+Transactional publishers are used to publish a set of messages for which a delivery shall succeed for all messages or
+none. Choose this publisher for publishing multiple messages for which it is important that delivery succeeds for
 all or none.
 
 Initializing a transactional publisher:
@@ -179,9 +178,9 @@ MessagePublisher publisher = new TransactionalPublisher(connectionFactory);
 
 ### Generic Publisher
 
-Generic publishers can be used to send messages with different reliability constraints, depending on the
-initialization parameter. This is useful in situation where your publisher is very generic and where reliability
-depends on the current use case.
+Generic publishers can be used to publish messages with different reliability constraints, depending on the
+initialization parameter. This is useful in situations where your implementation is very generic and where 
+reliability depends on the actual use case.
 
 Initializing a generic publisher using publisher confirms:
 
