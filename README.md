@@ -61,7 +61,7 @@ Creating a message without properties:
 
 ```Java
 Message message = new Message()
-        .exchange("myExchange")
+        .exchange("my.exchange")
         .routingKey("my.routing.key")
         .body("My message content");
 ```
@@ -74,7 +74,7 @@ AMQP.BasicProperties basicProperties = new AMQP.BasicProperties.Builder()
         .build();
 
 Message message = new Message(basicProperties)
-        .exchange("myExchange")
+        .exchange("my.exchange")
         .routingKey("my.routing.key")
         .body("My message content");
 ```
@@ -102,7 +102,9 @@ ConnectionFactory connectionFactory = new SingleConnectionFactory();
 Channel channel = connectionFactory.newConnection().createChannel();
 
 Message message = new Message()
-        .body("123")
+        .exchange("my.exchange")
+        .routingKey("my.routing.key")
+        .body("My message content")
         .publish(channel);
 ```
 
@@ -123,7 +125,7 @@ Publishing a message with a simple publisher:
 ConnectionFactory connectionFactory = new SingleConnectionFactory();
 
 Message message = new Message()
-        .exchange("myExchange")
+        .exchange("my.exchange")
         .body("My message content");
 
 Publisher publisher = new SimplePublisher(connectionFactory);
@@ -137,10 +139,10 @@ Publishing multiple messages with a simple publisher:
 ConnectionFactory connectionFactory = new SingleConnectionFactory();
 
 Message messageOne = new Message()
-        .exchange("myExchange")
+        .exchange("my.exchange")
         .body("My message one");
 Message messageTwo = new Message()
-        .exchange("myExchange")
+        .exchange("my.exchange")
         .body("My message two");
 
 List<Message> messageList = new ArrayList<Message>();
