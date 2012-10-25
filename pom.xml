@@ -9,7 +9,7 @@
 
 	<groupId>com.zanox.lib.rabbiteasy</groupId>
 	<artifactId>rabbiteasy</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>pom</packaging>
 	<name>RabbitEasy</name>
 	<description>Convenient library for clients using a RabbitMQ message broker</description>
