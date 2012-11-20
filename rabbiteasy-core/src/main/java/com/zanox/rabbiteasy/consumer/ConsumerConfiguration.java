@@ -43,4 +43,7 @@ public class ConsumerConfiguration {
 		return autoAck;
 	}
 
+    public int getInstances() {
+        return instances;
+    }
 }
