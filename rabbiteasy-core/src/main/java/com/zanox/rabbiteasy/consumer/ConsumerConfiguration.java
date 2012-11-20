@@ -13,6 +13,7 @@ public class ConsumerConfiguration {
 
 	private String queueName;
 	private boolean autoAck = false;
+    private int instances = 1;
 
 	public ConsumerConfiguration(String queueName) {
 		this.queueName = queueName;
@@ -21,6 +22,17 @@ public class ConsumerConfiguration {
     public ConsumerConfiguration(String queueName, boolean autoAck) {
         this.queueName = queueName;
         this.autoAck = autoAck;
+    }
+
+    public ConsumerConfiguration(String queueName, int instances) {
+            this.queueName = queueName;
+            this.instances = instances;
+    }
+
+    public ConsumerConfiguration(String queueName, boolean autoAck, int instances) {
+        this.queueName = queueName;
+        this.autoAck = autoAck;
+        this.instances = instances;
     }
 
 	public String getQueueName() {

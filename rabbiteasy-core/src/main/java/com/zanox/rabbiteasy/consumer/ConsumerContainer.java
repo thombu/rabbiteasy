@@ -68,6 +68,39 @@ public class ConsumerContainer {
     }
 
     /**
+     * <p>Adds a consumer to the container, binds it to the given queue with auto acknowledge disabled.
+     * Does NOT enable the consumer to consume from the message broker until the container is started.</p>
+     *
+     * <p>If the specified amount of instances is N then then the given consumer is cloned N-1 times and all
+     * resulting N instances are registered at the queue. Uses this for scaling your consumers locally. The
+     * consumer must implement {@link Cloneable} to provide consumer clones.</p>
+     *
+     * @param consumer The consumer
+     * @param queue The queue to bind the consume to
+     * @param instances the amount of consumer instances
+     */
+    public void addConsumer(Consumer consumer, String queue, int instances) {
+        addConsumer(consumer, new ConsumerConfiguration(queue, instances));
+    }
+
+    /**
+     * <p>Adds a consumer to the container, binds it to the given queue and sets whether the consumer auto acknowledge
+     * or not. Does NOT enable the consumer to consume from the message broker until the container is started.</p>
+     *
+     * <p>If the specified amount of instances is N then then the given consumer is cloned N-1 times and all
+     * resulting N instances are registered at the queue. Uses this for scaling your consumers locally. The
+     * consumer must implement {@link Cloneable} to provide consumer clones.</p>
+     *
+     * @param consumer The consumer
+     * @param queue The queue to bind the consume to
+     * @param autoAck whether the consumer shall auto ack or not
+     * @param instances the amount of consumer instances
+     */
+    public void addConsumer(Consumer consumer, String queue, boolean autoAck, int instances) {
+        addConsumer(consumer, new ConsumerConfiguration(queue, autoAck, instances));
+    }
+
+    /**
      * Adds a consumer to the container and configures it according to the consumer
      * configuration. Does NOT enable the consumer to consume from the message broker until the container is started.
      *
