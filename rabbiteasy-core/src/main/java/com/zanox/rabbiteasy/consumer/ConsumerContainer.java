@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +24,8 @@ import java.util.List;
 public class ConsumerContainer {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerContainer.class);
-    
+    private static final int DEFAULT_AMOUNT_OF_INSTANCES = 1;
+
     ConnectionFactory connectionFactory;
     List<ConsumerHolder> consumerHolders = Collections.synchronizedList(new LinkedList<ConsumerHolder>());
     
@@ -52,7 +54,7 @@ public class ConsumerContainer {
      * @param queue The queue to bind the consume to
      */
     public void addConsumer(Consumer consumer, String queue) {
-        addConsumer(consumer, new ConsumerConfiguration(queue));
+        addConsumer(consumer, new ConsumerConfiguration(queue), DEFAULT_AMOUNT_OF_INSTANCES);
     }
 
     /**
@@ -64,32 +66,32 @@ public class ConsumerContainer {
      * @param autoAck whether the consumer shall auto ack or not
      */
     public void addConsumer(Consumer consumer, String queue, boolean autoAck) {
-        addConsumer(consumer, new ConsumerConfiguration(queue, autoAck));
+        addConsumer(consumer, new ConsumerConfiguration(queue, autoAck), DEFAULT_AMOUNT_OF_INSTANCES);
     }
 
     /**
      * <p>Adds a consumer to the container, binds it to the given queue with auto acknowledge disabled.
      * Does NOT enable the consumer to consume from the message broker until the container is started.</p>
      *
-     * <p>If the specified amount of instances is N then then the given consumer is cloned N-1 times and all
-     * resulting N instances are registered at the queue. Uses this for scaling your consumers locally. The
-     * consumer must implement {@link Cloneable} to provide consumer clones.</p>
+     * <p>Registers the same consumer N times at the queue according to the number of specified instances.
+     * Use this for scaling your consumers locally. Be aware that the consumer implementation must
+     * be stateless or thread safe.</p>
      *
      * @param consumer The consumer
      * @param queue The queue to bind the consume to
      * @param instances the amount of consumer instances
      */
     public void addConsumer(Consumer consumer, String queue, int instances) {
-        addConsumer(consumer, new ConsumerConfiguration(queue, instances));
+        addConsumer(consumer, new ConsumerConfiguration(queue), instances);
     }
 
     /**
      * <p>Adds a consumer to the container, binds it to the given queue and sets whether the consumer auto acknowledge
      * or not. Does NOT enable the consumer to consume from the message broker until the container is started.</p>
      *
-     * <p>If the specified amount of instances is N then then the given consumer is cloned N-1 times and all
-     * resulting N instances are registered at the queue. Uses this for scaling your consumers locally. The
-     * consumer must implement {@link Cloneable} to provide consumer clones.</p>
+     * <p>Registers the same consumer N times at the queue according to the number of specified instances.
+     * Use this for scaling your consumers locally. Be aware that the consumer implementation must
+     * be stateless or thread safe.</p>
      *
      * @param consumer The consumer
      * @param queue The queue to bind the consume to
@@ -97,18 +99,25 @@ public class ConsumerContainer {
      * @param instances the amount of consumer instances
      */
     public void addConsumer(Consumer consumer, String queue, boolean autoAck, int instances) {
-        addConsumer(consumer, new ConsumerConfiguration(queue, autoAck, instances));
+        addConsumer(consumer, new ConsumerConfiguration(queue, autoAck), instances);
     }
 
     /**
      * Adds a consumer to the container and configures it according to the consumer
      * configuration. Does NOT enable the consumer to consume from the message broker until the container is started.
      *
+     * <p>Registers the same consumer N times at the queue according to the number of specified instances.
+     * Use this for scaling your consumers locally. Be aware that the consumer implementation must
+     * be stateless or thread safe.</p>
+     *
      * @param consumer The consumer
      * @param configuration The consumer configuration
+     * @param instances the amount of consumer instances
      */
-    public synchronized void addConsumer(Consumer consumer, ConsumerConfiguration configuration) {
-        this.consumerHolders.add(new ConsumerHolder(consumer, configuration));
+    public synchronized void addConsumer(Consumer consumer, ConsumerConfiguration configuration, int instances) {
+        for (int i=0; i < instances; i++) {
+            this.consumerHolders.add(new ConsumerHolder(consumer, configuration));
+        }
     }
 
     /**

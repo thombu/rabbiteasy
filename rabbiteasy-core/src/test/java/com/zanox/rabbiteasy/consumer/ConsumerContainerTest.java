@@ -57,6 +57,19 @@ public class ConsumerContainerTest {
     private void mockDeactivatingOperations() throws Exception {
         expect(channel.getCloseReason()).andReturn(null).anyTimes();
     }
+
+    @Test
+    public void testAddConsumerForSingleConsumer() throws Exception {
+        consumerContainer.addConsumer(new TestConsumerThree(), TestBrokerSetup.TEST_QUEUE);
+        Assert.assertEquals(consumerContainer.filterConsumersForClass(TestConsumerThree.class).size(), 1);
+    }
+
+    @Test
+    public void testAddConsumerForMultipleConsumers() throws Exception {
+        int instanceAmount = 10;
+        consumerContainer.addConsumer(new TestConsumerThree(), TestBrokerSetup.TEST_QUEUE, instanceAmount);
+        Assert.assertEquals(consumerContainer.filterConsumersForClass(TestConsumerThree.class).size(), instanceAmount);
+    }
     
     @Test
     public void testFilterConsumersForClass() {
@@ -216,6 +229,12 @@ public class ConsumerContainerTest {
         @Override
         public void handleMessage(Message message) { }
         
+    }
+
+    public class TestConsumerThree extends MessageConsumer {
+        @Override
+        public void handleMessage(Message message) { }
+
     }
     
 
