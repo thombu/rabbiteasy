@@ -27,35 +27,35 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
      * {@inheritDoc}
      */
     public void handleConsumeOk(String consumerTag) {
-        LOGGER.info("Consumer {}: Received consume OK", consumerTag);
+        LOGGER.debug("Consumer {}: Received consume OK", consumerTag);
     }
 
     /**
      * {@inheritDoc}
      */
     public void handleCancelOk(String consumerTag) {
-        LOGGER.info("Consumer {}: Received cancel OK", consumerTag);
+        LOGGER.debug("Consumer {}: Received cancel OK", consumerTag);
     }
 
     /**
      * {@inheritDoc}
      */
     public void handleCancel(String consumerTag) throws IOException {
-        LOGGER.info("Consumer {}: Received cancel", consumerTag);
+        LOGGER.debug("Consumer {}: Received cancel", consumerTag);
     }
 
     /**
      * {@inheritDoc}
      */
     public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
-        LOGGER.info("Consumer {}: Received shutdown signal: {}", consumerTag, sig.getMessage());
+        LOGGER.debug("Consumer {}: Received shutdown signal: {}", consumerTag, sig.getMessage());
     }
 
     /**
      * {@inheritDoc}
      */
     public void handleRecoverOk(String consumerTag) {
-        LOGGER.info("Consumer {}: Received recover OK", consumerTag);
+        LOGGER.debug("Consumer {}: Received recover OK", consumerTag);
     }
 
     /**
@@ -67,15 +67,14 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
      */
     public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
         throws IOException {
-        LOGGER.info("Consumer {}: Received handle delivery", consumerTag);
+        LOGGER.debug("Consumer {}: Received handle delivery", consumerTag);
         Message message = new Message(properties)
                 .exchange(envelope.getExchange())
                 .routingKey(envelope.getRoutingKey())
                 .deliveryTag(envelope.getDeliveryTag())
                 .body(body);
         try {
-            LOGGER.info("Consumer {}: Received message {}", 
-                consumerTag, envelope.getDeliveryTag());
+            LOGGER.info("Consumer {}: Received message {}", consumerTag, envelope.getDeliveryTag());
             handleMessage(message);
         } catch (Throwable t) {
             if (!getConfiguration().isAutoAck()) {
@@ -90,7 +89,7 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
         if (!getConfiguration().isAutoAck()) {
             try {
                 getChannel().basicAck(envelope.getDeliveryTag(), false);
-                LOGGER.info("Consumer {}: Acked message {}", consumerTag, envelope.getDeliveryTag() );
+                LOGGER.debug("Consumer {}: Acked message {}", consumerTag, envelope.getDeliveryTag() );
             } catch(IOException e) {
                 LOGGER.error("Consumer {}: Message {} was processed but could not be acknowledged due to an exception when sending the acknowledgement", 
                     new Object[] { consumerTag, envelope.getDeliveryTag(), e });
