@@ -7,7 +7,7 @@ import org.powermock.api.easymock.PowerMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 
-public class TransactionPublisherTest extends MessagePublisherTest {
+public class TransactionalPublisherTest extends MessagePublisherTest {
 
 	@Test
 	public void shouldPublishMessageAndWaitForAck() throws Exception {
