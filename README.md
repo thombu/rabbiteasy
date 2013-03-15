@@ -26,6 +26,8 @@ and read the [documentation](https://github.com/zanox/rabbiteasy#core-1)
 Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-cdi%22)
 and read the [documentation](https://github.com/zanox/rabbiteasy#cdi-1)
 
+For a full example, have a look at [RabbitOrdering](https://github.com/zanox/rabbitordering)
+
 ### Testing
 
 - convenient broker definition setup and tear down
@@ -435,7 +437,3 @@ public class MyEvent implements ContainsData {
     }
 }
 ```
-
-## Example application
-
-For a full example, have a look at our [example application](https://github.com/zanox/rabbitordering).
