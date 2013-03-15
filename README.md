@@ -15,7 +15,7 @@ applications.
 - managed consumers that recover from connection loss and re-attach to the broker
 
 Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-core%22)
-and read the [documentation](https://github.com/zanox/rabbiteasy#core-1)
+and read the [documentation](https://github.com/zanox/rabbiteasy#core-1).
 
 ### CDI
 
@@ -24,16 +24,16 @@ and read the [documentation](https://github.com/zanox/rabbiteasy#core-1)
 - consuming of AMQP messages from queues as CDI events  
 
 Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-cdi%22)
-and read the [documentation](https://github.com/zanox/rabbiteasy#cdi-1)
+and read the [documentation](https://github.com/zanox/rabbiteasy#cdi-1).
 
-For a full example, have a look at [RabbitOrdering](https://github.com/zanox/rabbitordering)
+Also have a look at RabbitOrdering for an [extensive example](https://github.com/zanox/rabbitordering).
 
 ### Testing
 
 - convenient broker definition setup and tear down
 - convenient asserts on current broker state
 
-Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-testing%22)
+Get it from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rabbiteasy-testing%22).
 
 # Core
 
