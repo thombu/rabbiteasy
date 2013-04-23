@@ -421,7 +421,7 @@ public class MyEvent implements ContainsId<Integer> {
 
 ### Adding raw data as content
 
-To transport rare data like binary files within an event, implement the ContainsData interface:
+To transport raw data like binary files within an event, implement the ContainsData interface:
 
 ```Java
 public class MyEvent implements ContainsData {
