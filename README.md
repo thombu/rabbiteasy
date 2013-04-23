@@ -419,7 +419,7 @@ public class MyEvent implements ContainsId<Integer> {
 }
 ```
 
-### Adding rare data as content
+### Adding raw data as content
 
 To transport rare data like binary files within an event, implement the ContainsData interface:
 
