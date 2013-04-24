@@ -1,3 +1,8 @@
+## 1.2.0
+
+* [Issue #1](https://github.com/zanox/rabbiteasy/issues/1) - Added set executor service to connection factory
+
+
 ## 1.1.0
 
 * Added support for registering multiple consumer instances of the same consumer type at a consumer container
