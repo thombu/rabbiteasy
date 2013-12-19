@@ -5,8 +5,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.zanox.rabbiteasy.Message;
 import com.zanox.rabbiteasy.TestBrokerSetup;
-import com.zanox.rabbiteasy.testing.BrokerSetup;
 import junit.framework.Assert;
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.IOException;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyBoolean;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.isA;
 
 
 @RunWith(PowerMockRunner.class)
@@ -52,6 +56,8 @@ public class ConsumerContainerTest {
     
     private void mockActivatingOperations() throws Exception {
         expect(channel.basicConsume(anyObject(String.class), anyBoolean(), isA(MessageConsumer.class))).andReturn("").anyTimes();
+        channel.basicQos(EasyMock.anyInt());
+        EasyMock.expectLastCall().atLeastOnce();
     }
     
     private void mockDeactivatingOperations() throws Exception {
@@ -109,6 +115,8 @@ public class ConsumerContainerTest {
         @SuppressWarnings("unchecked")
         ConsumerContainer.ConsumerHolder consumerHolder = consumerContainer.consumerHolders.get(0);
         expect(channel.basicConsume(TestBrokerSetup.TEST_QUEUE, false, consumerHolder.getConsumer())).andReturn("").once();
+        channel.basicQos(EasyMock.anyInt());
+        EasyMock.expectLastCall().once();
         PowerMock.replayAll();
         consumerHolder.activate();
         Assert.assertTrue(consumerHolder.isActive());

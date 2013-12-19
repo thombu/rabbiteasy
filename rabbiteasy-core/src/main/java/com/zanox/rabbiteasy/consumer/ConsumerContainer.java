@@ -1,13 +1,16 @@
 package com.zanox.rabbiteasy.consumer;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.ShutdownListener;
 import com.zanox.rabbiteasy.ConnectionListener;
 import com.zanox.rabbiteasy.SingleConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,10 +82,45 @@ public class ConsumerContainer {
      *
      * @param consumer The consumer
      * @param queue The queue to bind the consume to
+     * @param prefetchMessageCount The number of message the client keep in buffer before processing them.
+     * @param instances the amount of consumer instances
+     */
+    public void addConsumer(Consumer consumer, String queue, int prefetchMessageCount, int instances) {
+        addConsumer(consumer, new ConsumerConfiguration(queue, prefetchMessageCount), instances);
+    }
+
+    /**
+     * <p>Adds a consumer to the container, binds it to the given queue with auto acknowledge disabled.
+     * Does NOT enable the consumer to consume from the message broker until the container is started.</p>
+     *
+     * <p>Registers the same consumer N times at the queue according to the number of specified instances.
+     * Use this for scaling your consumers locally. Be aware that the consumer implementation must
+     * be stateless or thread safe.</p>
+     *
+     * @param consumer The consumer
+     * @param queue The queue to bind the consume to
      * @param instances the amount of consumer instances
      */
     public void addConsumer(Consumer consumer, String queue, int instances) {
         addConsumer(consumer, new ConsumerConfiguration(queue), instances);
+    }
+
+    /**
+     * <p>Adds a consumer to the container, binds it to the given queue and sets whether the consumer auto acknowledge
+     * or not. Does NOT enable the consumer to consume from the message broker until the container is started.</p>
+     *
+     * <p>Registers the same consumer N times at the queue according to the number of specified instances.
+     * Use this for scaling your consumers locally. Be aware that the consumer implementation must
+     * be stateless or thread safe.</p>
+     *
+     * @param consumer The consumer
+     * @param queue The queue to bind the consume to
+     * @param autoAck whether the consumer shall auto ack or not
+     * @param prefetchMessageCount The number of message the client keep in buffer before processing them.
+     * @param instances the amount of consumer instances
+     */
+    public void addConsumer(Consumer consumer, String queue, boolean autoAck, int prefetchMessageCount, int instances) {
+        addConsumer(consumer, new ConsumerConfiguration(queue, autoAck, prefetchMessageCount), instances);
     }
 
     /**
@@ -513,6 +551,7 @@ public class ConsumerContainer {
                     ((ManagedConsumer) consumer).setChannel(channel);
                 }
                 channel.basicConsume(configuration.getQueueName(), configuration.isAutoAck(), consumer);
+                channel.basicQos(configuration.getPrefetchMessageCount());
                 active = true;
                 LOGGER.info("Activated consumer of class {}", consumer.getClass());
             } catch (IOException e) {

@@ -1,23 +1,21 @@
 package com.zanox.rabbiteasy.consumer;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.Assert;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.rabbitmq.client.Connection;
 import com.zanox.rabbiteasy.Message;
 import com.zanox.rabbiteasy.SingleConnectionFactory;
 import com.zanox.rabbiteasy.TestBrokerSetup;
 import com.zanox.rabbiteasy.publisher.MessagePublisher;
 import com.zanox.rabbiteasy.publisher.SimplePublisher;
+import junit.framework.Assert;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ConsumerContainerIT {
@@ -99,7 +97,31 @@ public class ConsumerContainerIT {
             Assert.assertEquals(i, (int)receivedMessage.getBodyAs(Integer.class));
         }
     }
-    
+
+    @Test
+    public void shouldReceiveAllMessagesWithLimitedPrefetchCount() throws Exception {
+        brokerSetup.prepareSimpleTest();
+        TestConsumer testConsumer = new TestConsumer();
+        ConsumerContainer consumerContainer = prepareConsumerContainer(testConsumer, TestBrokerSetup.TEST_QUEUE, 10);
+        consumerContainer.startAllConsumers();
+        for (int i=1; i<=MESSAGE_AMOUNT; i++) {
+            Message message = new Message()
+                    .exchange(TestBrokerSetup.TEST_EXCHANGE)
+                    .routingKey(TestBrokerSetup.TEST_ROUTING_KEY)
+                    .body("" + i);
+            publisher.publish(message);
+        }
+        // Sleep depending on the amount of messages sent but at least 100 ms, and at most 1 sec
+        Thread.sleep(Math.max(100, Math.min(1000, MESSAGE_AMOUNT * 10)));
+        List<Message> receivedMessages = testConsumer.getReceivedMessages();
+        Assert.assertEquals(MESSAGE_AMOUNT, receivedMessages.size());
+        for (int i=1; i<=MESSAGE_AMOUNT; i++) {
+            Message receivedMessage = receivedMessages.get(i-1);
+            Assert.assertNotNull(receivedMessage);
+            Assert.assertEquals(i, (int)receivedMessage.getBodyAs(Integer.class));
+        }
+    }
+
     @Test(expected = IOException.class)
     public void shouldFailToStartConsumers() throws Exception {
         brokerSetup.prepareSimpleTest();
@@ -123,7 +145,12 @@ public class ConsumerContainerIT {
         consumerContainer.addConsumer(consumer, queue);
         return consumerContainer;
     }
-    
+
+    private ConsumerContainer prepareConsumerContainer(MessageConsumer consumer, String queue, int prefetchMessageCount) {
+        ConsumerContainer consumerContainer = new ConsumerContainer(connectionFactory);
+        consumerContainer.addConsumer(consumer, queue, prefetchMessageCount, 1);
+        return consumerContainer;
+    }
     private class TestConsumer extends MessageConsumer {
         
         private List<Message> receivedMessages = new ArrayList<Message>(MESSAGE_AMOUNT);
