@@ -4,11 +4,15 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.zanox.rabbiteasy.consumer.ConsumerContainer;
 import com.zanox.rabbiteasy.consumer.MessageConsumer;
 import junit.framework.Assert;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MessageTest {
 
@@ -26,6 +30,24 @@ public class MessageTest {
         
         String actualBodyContent = message.getBodyAs(String.class);
         Assert.assertEquals(bodyContent, actualBodyContent);
+    }
+
+    @Test
+    public void shouldReturnDTO() throws IOException {
+
+        TestDTO testDTO = new TestDTO();
+        testDTO.setId(34L);
+        testDTO.setName("name_bla");
+
+        ObjectMapper om = new ObjectMapper();
+        message.body(testDTO);
+
+        TestDTO actualBodyContent = message.getBodyAs(TestDTO.class);
+
+        assertEquals(testDTO.doBla(), actualBodyContent.doBla());
+
+        String bla = actualBodyContent.doBla();
+        String testBla = actualBodyContent.doBla();
     }
     
     @Test

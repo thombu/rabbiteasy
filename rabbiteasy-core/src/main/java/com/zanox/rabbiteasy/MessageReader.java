@@ -1,6 +1,9 @@
 package com.zanox.rabbiteasy;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.util.JSONPObject;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -9,6 +12,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -62,7 +66,7 @@ public class MessageReader {
         if (String.class.isAssignableFrom(type)) {
             return (T)readBodyAsString();
         } else if (Number.class.isAssignableFrom(type)) {
-            return (T)readBodyAsNumber((Class<Number>)type);
+            return (T)readBodyAsNumber((Class<Number>) type);
         } else if (Boolean.class.isAssignableFrom(type)) {
             return (T)readBodyAsBoolean();
         } else if (Character.class.isAssignableFrom(type)) {
@@ -142,19 +146,28 @@ public class MessageReader {
      */
     @SuppressWarnings("unchecked")
     public <T> T readBodyAsObject(Class<T> type) {
-        Charset charset = readCharset();
-        InputStream inputStream = new ByteArrayInputStream(message.getBodyContent());
-        InputStreamReader inputReader = new InputStreamReader(inputStream, charset);
-        StreamSource streamSource = new StreamSource(inputReader);
+//        Charset charset = readCharset();
+//        InputStream inputStream = new ByteArrayInputStream(message.getBodyContent());
+//        InputStreamReader inputReader = new InputStreamReader(inputStream, charset);
+//        StreamSource streamSource = new StreamSource(inputReader);
+//        try {
+//            Unmarshaller unmarshaller = JAXBContext.newInstance(type).createUnmarshaller();
+//            if (type.isAnnotationPresent(XmlRootElement.class)) {
+//                return (T)unmarshaller.unmarshal(streamSource);
+//            } else {
+//                JAXBElement<T> element = unmarshaller.unmarshal(streamSource, type);
+//                return element.getValue();
+//            }
+//        } catch (JAXBException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
-            Unmarshaller unmarshaller = JAXBContext.newInstance(type).createUnmarshaller();
-            if (type.isAnnotationPresent(XmlRootElement.class)) {
-                return (T)unmarshaller.unmarshal(streamSource);
-            } else {
-                JAXBElement<T> element = unmarshaller.unmarshal(streamSource, type);
-                return element.getValue();
-            }
-        } catch (JAXBException e) {
+            T object = objectMapper.readValue(message.getBodyContent(), type);
+            return object;
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

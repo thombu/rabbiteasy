@@ -1,4 +1,7 @@
-# Introduction 
+# Introduction
+
+This is a modified Module of RabbitEasy called BunnyEasy.
+Instead of using XML serialization for message sending, the body of a message is serialized as JSON.
 
 ## Purpose
 

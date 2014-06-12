@@ -1,5 +1,8 @@
 package com.zanox.rabbiteasy;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.ObjectMapper;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -7,6 +10,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
@@ -78,26 +82,34 @@ public class MessageWriter {
      * @param <T> The object type
      */
     public <T> void writeBodyFromObject(T bodyAsObject, Charset charset) {
-        @SuppressWarnings("unchecked")
-        Class<T> clazz = (Class<T>)bodyAsObject.getClass();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Writer outputWriter = new OutputStreamWriter(outputStream, charset);
-
+//        @SuppressWarnings("unchecked")
+//        Class<T> clazz = (Class<T>)bodyAsObject.getClass();
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        Writer outputWriter = new OutputStreamWriter(outputStream, charset);
+//
+//        try {
+//            Marshaller marshaller = JAXBContext.newInstance(clazz).createMarshaller();
+//            if (clazz.isAnnotationPresent(XmlRootElement.class)) {
+//                marshaller.marshal(bodyAsObject, outputWriter);
+//            } else {
+//                String tagName = unCapitalizedClassName(clazz);
+//                JAXBElement<T> element = new JAXBElement<T>(new QName("", tagName), clazz, bodyAsObject);
+//                marshaller.marshal(element, outputWriter);
+//            }
+//        } catch (JAXBException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        byte[] bodyContent = outputStream.toByteArray();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String bodyContent;
         try {
-            Marshaller marshaller = JAXBContext.newInstance(clazz).createMarshaller();
-            if (clazz.isAnnotationPresent(XmlRootElement.class)) {
-                marshaller.marshal(bodyAsObject, outputWriter);
-            } else {
-                String tagName = unCapitalizedClassName(clazz);
-                JAXBElement<T> element = new JAXBElement<T>(new QName("", tagName), clazz, bodyAsObject);
-                marshaller.marshal(element, outputWriter);
-            }
-        } catch (JAXBException e) {
+            bodyContent = objectMapper.writeValueAsString(bodyAsObject);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        byte[] bodyContent = outputStream.toByteArray();
-        message.contentType(Message.APPLICATION_XML)
+        message.contentType(Message.APPLICATION_JSON)
                 .contentEncoding(charset.name());
         message.body(bodyContent);
     }

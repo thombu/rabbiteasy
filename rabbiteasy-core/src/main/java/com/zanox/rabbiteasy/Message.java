@@ -27,7 +27,7 @@ public class Message {
 	public static final Charset DEFAULT_MESSAGE_CHARSET = Charset.forName("UTF-8");
 	public static final int DELIVERY_MODE_PERSISTENT = 2;
     public static final String TEXT_PLAIN = "text/plain";
-    public static final String APPLICATION_XML = "application/xml";
+    public static final String APPLICATION_JSON = "application/json";
 
     private MessageReader messageReader;
     private MessageWriter messageWriter;
